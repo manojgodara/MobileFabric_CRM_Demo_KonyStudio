@@ -1,0 +1,142 @@
+//Form JS File
+function frmContacts_segContacts_onRowClick_seq0(eventobject, sectionNumber, rowNumber) {
+    showContactDetails.call(this, contactDetails, rowNumber);
+};
+
+function addWidgetsfrmContacts() {
+    var segContactsbox = new kony.ui.Box({
+        "id": "segContactsbox",
+        "isVisible": true,
+        "orientation": constants.BOX_LAYOUT_VERTICAL
+    }, {
+        "layoutAlignment": constants.BOX_LAYOUT_ALIGN_FROM_LEFT,
+        "containerWeight": 45
+    }, {});
+    var segContacts = new kony.ui.SegmentedUI2({
+        "id": "segContacts",
+        "isVisible": true,
+        "retainSelection": false,
+        "widgetDataMap": {
+            "lblContactName": "lblContactName",
+            "lblContactTitle": "lblContactTitle"
+        },
+        "rowTemplate": segContactsbox,
+        "rowSkin": "seg2Normal",
+        "rowFocusSkin": "seg2Focus",
+        "sectionHeaderSkin": "seg2Header",
+        "separatorRequired": true,
+        "separatorThickness": 1,
+        "separatorColor": "99b2cc00",
+        "showScrollbars": false,
+        "groupCells": false,
+        "screenLevelWidget": true,
+        "onRowClick": frmContacts_segContacts_onRowClick_seq0,
+        "selectionBehavior": constants.SEGUI_DEFAULT_BEHAVIOR,
+        "viewType": constants.SEGUI_VIEW_TYPE_TABLEVIEW,
+        "viewConfig": {
+            "coverflowConfig": {
+                "projectionAngle": 60,
+                "isCircular": true
+            }
+        }
+    }, {
+        "margin": [0, 4, 0, 0],
+        "padding": [0, 0, 0, 0],
+        "marginInPixel": false,
+        "paddingInPixel": false,
+        "containerWeight": 45
+    }, {
+        "indicator": constants.SEGUI_NONE,
+        "enableDictionary": false,
+        "showProgressIndicator": true,
+        "progressIndicatorColor": constants.PROGRESS_INDICATOR_COLOR_WHITE,
+        "searchCriteria": constants.SEGUI_SEARCH_CRITERIA_CONTAINS,
+        "searchBy": "lblContactName",
+        "bounces": false,
+        "editStyle": constants.SEGUI_EDITING_STYLE_NONE
+    });
+    var lblContactName = new kony.ui.Label({
+        "id": "lblContactName",
+        "isVisible": true,
+        "skin": "sknLblSegHeading"
+    }, {
+        "widgetAlignment": constants.WIDGET_ALIGN_CENTER,
+        "vExpand": false,
+        "hExpand": true,
+        "margin": [3, 0, 0, 0],
+        "padding": [1, 2, 1, 2],
+        "contentAlignment": constants.CONTENT_ALIGN_MIDDLE_LEFT,
+        "marginInPixel": false,
+        "paddingInPixel": false,
+        "containerWeight": 14
+    }, {
+        "wrapping": constants.WIDGET_TEXT_WORD_WRAP
+    });
+    var lblContactTitle = new kony.ui.Label({
+        "id": "lblContactTitle",
+        "isVisible": true,
+        "skin": "sknLblSegSubHdng"
+    }, {
+        "widgetAlignment": constants.WIDGET_ALIGN_CENTER,
+        "vExpand": false,
+        "hExpand": true,
+        "margin": [3, 0, 0, 0],
+        "padding": [1, 2, 1, 2],
+        "contentAlignment": constants.CONTENT_ALIGN_MIDDLE_LEFT,
+        "marginInPixel": false,
+        "paddingInPixel": false,
+        "containerWeight": 14
+    }, {
+        "wrapping": constants.WIDGET_TEXT_WORD_WRAP
+    });
+    segContactsbox.add(
+    lblContactName, lblContactTitle);
+    frmContacts.add(
+    segContacts);
+};
+
+function frmContactsGlobals() {
+    var MenuId = [];
+    frmContacts = new kony.ui.Form2({
+        "id": "frmContacts",
+        "title": "Contacts",
+        "needAppMenu": true,
+        "enabledForIdleTimeout": false,
+        "skin": "frm",
+        "addWidgets": addWidgetsfrmContacts
+    }, {
+        "padding": [0, 0, 0, 0],
+        "displayOrientation": constants.FORM_DISPLAY_ORIENTATION_PORTRAIT,
+        "paddingInPixel": false,
+        "layoutType": constants.CONTAINER_LAYOUT_BOX
+    }, {
+        "retainScrollPosition": false,
+        "needsIndicatorDuringPostShow": true,
+        "formTransparencyDuringPostShow": "100",
+        "inputAccessoryViewType": constants.FORM_INPUTACCESSORYVIEW_DEFAULT,
+        "bounces": true,
+        "configureExtendTop": false,
+        "configureExtendBottom": false,
+        "configureStatusBarStyle": false,
+        "titleBar": true,
+        "titleBarSkin": "sknTitleKonyTheme",
+        "titleBarConfig": {
+            "renderTitleText": true,
+            "titleBarLeftSideView": "button",
+            "imageLeftSideView": "back_ico.png"
+        },
+        "footerOverlap": false,
+        "headerOverlap": false,
+        "inTransitionConfig": {
+            "transitionDirection": "none",
+            "transitionEffect": "none"
+        },
+        "outTransitionConfig": {
+            "transitionDirection": "none",
+            "transitionEffect": "none"
+        },
+        "deprecated": {
+            "titleBarBackGroundImage": "blue_pixel.png"
+        }
+    });
+};

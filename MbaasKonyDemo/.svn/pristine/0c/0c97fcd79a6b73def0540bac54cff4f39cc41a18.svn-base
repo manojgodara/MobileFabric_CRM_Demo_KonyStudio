@@ -1,0 +1,29 @@
+var client;
+
+function initSuccessCallBack(res) {
+    frmLogin.textUserName.text = "lavanya.godf@gmail.com";
+    frmLogin.textPassword.text = "kony@1234u8MazSA2WqpIaYrpeuMAwOms";
+    kony.application.dismissLoadingScreen();
+}
+
+function initFailureCallBack(res) {
+    var basicConf = {
+        message: "Failure",
+        alertType: constants.ALERT_TYPE_INFO,
+        alertTitle: "Initialization"
+    };
+    kony.ui.Alert(basicConf, {});
+    kony.application.dismissLoadingScreen();
+}
+
+function initMbaas() {
+    client = new kony.mbaas();
+    if (kony.os.deviceInfo().name == "iPhone" || kony.os.deviceInfo().name == "iPad") kony.application.showLoadingScreen("sknLoading", "Please wait...", constants.LOADING_SCREEN_POSITION_FULL_SCREEN, true, true, {
+        shouldShowLabelInBottom: true,
+        separatorHeight: 30
+    });
+    else kony.application.showLoadingScreen("sknLoading", "Please wait...", constants.LOADING_SCREEN_POSITION_FULL_SCREEN, true, true, null);
+    client.init("5e90d3f76960bc98c161e7992a16afa9", "278bc285609c050693101afde1c7ad7b", "https://mbaas-apps-test.auth.konycloud.com/appconfig", initSuccessCallBack, initFailureCallBack);
+}
+
+function dummy() {};

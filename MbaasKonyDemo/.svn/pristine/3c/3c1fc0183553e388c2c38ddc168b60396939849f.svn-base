@@ -1,0 +1,329 @@
+//Form JS File
+function addWidgetsfrmContactDetails() {
+    var line137130631451556 = new kony.ui.Line({
+        "id": "line137130631451556",
+        "isVisible": true,
+        "skin": "lineWhite"
+    }, {
+        "thickness": 1,
+        "margin": [0, 0, 0, 0],
+        "marginInPixel": false,
+        "paddingInPixel": false
+    }, {});
+    var lblContactDetName = new kony.ui.Label({
+        "id": "lblContactDetName",
+        "isVisible": true,
+        "text": null,
+        "skin": "sknLblHdngWhite"
+    }, {
+        "widgetAlignment": constants.WIDGET_ALIGN_CENTER,
+        "vExpand": false,
+        "hExpand": true,
+        "margin": [3, 3, 0, 0],
+        "padding": [1, 1, 1, 1],
+        "contentAlignment": constants.CONTENT_ALIGN_MIDDLE_LEFT,
+        "marginInPixel": false,
+        "paddingInPixel": false,
+        "containerWeight": 36
+    }, {
+        "wrapping": constants.WIDGET_TEXT_WORD_WRAP
+    });
+    var lblContactDetTtl = new kony.ui.Label({
+        "id": "lblContactDetTtl",
+        "isVisible": true,
+        "text": null,
+        "skin": "sknLblContactTtl"
+    }, {
+        "widgetAlignment": constants.WIDGET_ALIGN_CENTER,
+        "vExpand": false,
+        "hExpand": true,
+        "margin": [3, 0, 0, 3],
+        "padding": [1, 1, 1, 1],
+        "contentAlignment": constants.CONTENT_ALIGN_MIDDLE_LEFT,
+        "marginInPixel": false,
+        "paddingInPixel": false,
+        "containerWeight": 36
+    }, {
+        "wrapping": constants.WIDGET_TEXT_WORD_WRAP
+    });
+    var vbox137130631453101 = new kony.ui.Box({
+        "id": "vbox137130631453101",
+        "isVisible": true,
+        "orientation": constants.BOX_LAYOUT_VERTICAL
+    }, {
+        "containerWeight": 100,
+        "margin": [0, 0, 0, 0],
+        "padding": [0, 0, 0, 0],
+        "widgetAlignment": constants.WIDGET_ALIGN_TOP_LEFT,
+        "marginInPixel": false,
+        "paddingInPixel": false,
+        "vExpand": false,
+        "hExpand": true,
+        "layoutType": constants.CONTAINER_LAYOUT_BOX
+    }, {});
+    vbox137130631453101.add(
+    lblContactDetName, lblContactDetTtl);
+    var hbox137130631451555 = new kony.ui.Box({
+        "id": "hbox137130631451555",
+        "isVisible": true,
+        "skin": "sknHbxDashboardFoc",
+        "focusSkin": "sknHbxDashboardFoc",
+        "position": constants.BOX_POSITION_AS_NORMAL,
+        "orientation": constants.BOX_LAYOUT_HORIZONTAL
+    }, {
+        "containerWeight": 18,
+        "percent": true,
+        "widgetAlignment": constants.WIDGET_ALIGN_TOP_LEFT,
+        "margin": [0, 0, 0, 0],
+        "padding": [0, 0, 0, 0],
+        "vExpand": false,
+        "marginInPixel": false,
+        "paddingInPixel": false,
+        "layoutType": constants.CONTAINER_LAYOUT_BOX
+    }, {});
+    hbox137130631451555.add(
+    vbox137130631453101);
+    var label137130631454579 = new kony.ui.Label({
+        "id": "label137130631454579",
+        "isVisible": true,
+        "text": "Details",
+        "skin": "sknLblDetails"
+    }, {
+        "widgetAlignment": constants.WIDGET_ALIGN_CENTER,
+        "vExpand": false,
+        "hExpand": true,
+        "margin": [0, 0, 0, 0],
+        "padding": [4, 2, 1, 2],
+        "contentAlignment": constants.CONTENT_ALIGN_MIDDLE_LEFT,
+        "marginInPixel": false,
+        "paddingInPixel": false,
+        "containerWeight": 6
+    }, {
+        "wrapping": constants.WIDGET_TEXT_WORD_WRAP
+    });
+    var label137130631455548 = new kony.ui.Label({
+        "id": "label137130631455548",
+        "isVisible": true,
+        "text": "First Name",
+        "skin": "sknLblSubHeadOpports"
+    }, {
+        "widgetAlignment": constants.WIDGET_ALIGN_CENTER,
+        "vExpand": false,
+        "hExpand": true,
+        "margin": [3, 2, 0, 0],
+        "padding": [1, 1, 1, 1],
+        "contentAlignment": constants.CONTENT_ALIGN_MIDDLE_LEFT,
+        "marginInPixel": false,
+        "paddingInPixel": false,
+        "containerWeight": 6
+    }, {
+        "wrapping": constants.WIDGET_TEXT_WORD_WRAP
+    });
+    var lblContactDetFName = new kony.ui.Label({
+        "id": "lblContactDetFName",
+        "isVisible": true,
+        "text": null,
+        "skin": "sknLblHeadOpports"
+    }, {
+        "widgetAlignment": constants.WIDGET_ALIGN_CENTER,
+        "vExpand": false,
+        "hExpand": true,
+        "margin": [3, 0, 0, 2],
+        "padding": [1, 1, 1, 1],
+        "contentAlignment": constants.CONTENT_ALIGN_MIDDLE_LEFT,
+        "marginInPixel": false,
+        "paddingInPixel": false,
+        "containerWeight": 6
+    }, {
+        "wrapping": constants.WIDGET_TEXT_WORD_WRAP
+    });
+    var line137130631455550 = new kony.ui.Line({
+        "id": "line137130631455550",
+        "isVisible": true,
+        "skin": "lineNormal"
+    }, {
+        "thickness": 1,
+        "margin": [3, 0, 0, 0],
+        "marginInPixel": false,
+        "paddingInPixel": false
+    }, {});
+    var label137130631456752 = new kony.ui.Label({
+        "id": "label137130631456752",
+        "isVisible": true,
+        "text": "Last Name",
+        "skin": "sknLblSubHeadOpports"
+    }, {
+        "widgetAlignment": constants.WIDGET_ALIGN_CENTER,
+        "vExpand": false,
+        "hExpand": true,
+        "margin": [3, 2, 0, 0],
+        "padding": [1, 1, 1, 1],
+        "contentAlignment": constants.CONTENT_ALIGN_MIDDLE_LEFT,
+        "marginInPixel": false,
+        "paddingInPixel": false,
+        "containerWeight": 6
+    }, {
+        "wrapping": constants.WIDGET_TEXT_WORD_WRAP
+    });
+    var lblContactDetLName = new kony.ui.Label({
+        "id": "lblContactDetLName",
+        "isVisible": true,
+        "text": null,
+        "skin": "sknLblHeadOpports"
+    }, {
+        "widgetAlignment": constants.WIDGET_ALIGN_CENTER,
+        "vExpand": false,
+        "hExpand": true,
+        "margin": [3, 0, 0, 2],
+        "padding": [1, 1, 1, 1],
+        "contentAlignment": constants.CONTENT_ALIGN_MIDDLE_LEFT,
+        "marginInPixel": false,
+        "paddingInPixel": false,
+        "containerWeight": 6
+    }, {
+        "wrapping": constants.WIDGET_TEXT_WORD_WRAP
+    });
+    var line137130631457096 = new kony.ui.Line({
+        "id": "line137130631457096",
+        "isVisible": true,
+        "skin": "lineNormal"
+    }, {
+        "thickness": 1,
+        "margin": [3, 0, 0, 0],
+        "marginInPixel": false,
+        "paddingInPixel": false
+    }, {});
+    var label137130631457260 = new kony.ui.Label({
+        "id": "label137130631457260",
+        "isVisible": true,
+        "text": "Phone",
+        "skin": "sknLblSubHeadOpports"
+    }, {
+        "widgetAlignment": constants.WIDGET_ALIGN_CENTER,
+        "vExpand": false,
+        "hExpand": true,
+        "margin": [3, 2, 0, 0],
+        "padding": [1, 1, 1, 1],
+        "contentAlignment": constants.CONTENT_ALIGN_MIDDLE_LEFT,
+        "marginInPixel": false,
+        "paddingInPixel": false,
+        "containerWeight": 6
+    }, {
+        "wrapping": constants.WIDGET_TEXT_WORD_WRAP
+    });
+    var lblContactDetPhone = new kony.ui.Label({
+        "id": "lblContactDetPhone",
+        "isVisible": true,
+        "text": null,
+        "skin": "sknLblHeadOpports"
+    }, {
+        "widgetAlignment": constants.WIDGET_ALIGN_CENTER,
+        "vExpand": false,
+        "hExpand": true,
+        "margin": [3, 0, 0, 2],
+        "padding": [1, 1, 1, 1],
+        "contentAlignment": constants.CONTENT_ALIGN_MIDDLE_LEFT,
+        "marginInPixel": false,
+        "paddingInPixel": false,
+        "containerWeight": 6
+    }, {
+        "wrapping": constants.WIDGET_TEXT_WORD_WRAP
+    });
+    var line137130631458472 = new kony.ui.Line({
+        "id": "line137130631458472",
+        "isVisible": true,
+        "skin": "lineNormal"
+    }, {
+        "thickness": 1,
+        "margin": [3, 0, 0, 0],
+        "marginInPixel": false,
+        "paddingInPixel": false
+    }, {});
+    var label137130631458596 = new kony.ui.Label({
+        "id": "label137130631458596",
+        "isVisible": true,
+        "text": "Email",
+        "skin": "sknLblSubHeadOpports"
+    }, {
+        "widgetAlignment": constants.WIDGET_ALIGN_CENTER,
+        "vExpand": false,
+        "hExpand": true,
+        "margin": [3, 2, 0, 0],
+        "padding": [1, 1, 1, 1],
+        "contentAlignment": constants.CONTENT_ALIGN_MIDDLE_LEFT,
+        "marginInPixel": false,
+        "paddingInPixel": false,
+        "containerWeight": 6
+    }, {
+        "wrapping": constants.WIDGET_TEXT_WORD_WRAP
+    });
+    var lblContactDetEmail = new kony.ui.Label({
+        "id": "lblContactDetEmail",
+        "isVisible": true,
+        "text": null,
+        "skin": "sknLblHeadOpports"
+    }, {
+        "widgetAlignment": constants.WIDGET_ALIGN_CENTER,
+        "vExpand": false,
+        "hExpand": true,
+        "margin": [3, 0, 0, 2],
+        "padding": [1, 1, 1, 1],
+        "contentAlignment": constants.CONTENT_ALIGN_MIDDLE_LEFT,
+        "marginInPixel": false,
+        "paddingInPixel": false,
+        "containerWeight": 6
+    }, {
+        "wrapping": constants.WIDGET_TEXT_WORD_WRAP
+    });
+    frmContactDetails.add(
+    line137130631451556, hbox137130631451555, label137130631454579, label137130631455548, lblContactDetFName, line137130631455550, label137130631456752, lblContactDetLName, line137130631457096, label137130631457260, lblContactDetPhone, line137130631458472, label137130631458596, lblContactDetEmail);
+};
+
+function frmContactDetailsGlobals() {
+    var MenuId = [];
+    frmContactDetails = new kony.ui.Form2({
+        "id": "frmContactDetails",
+        "title": "Contact",
+        "needAppMenu": true,
+        "enabledForIdleTimeout": false,
+        "skin": "frm",
+        "addWidgets": addWidgetsfrmContactDetails
+    }, {
+        "padding": [0, 0, 0, 0],
+        "displayOrientation": constants.FORM_DISPLAY_ORIENTATION_PORTRAIT,
+        "paddingInPixel": false,
+        "layoutType": constants.CONTAINER_LAYOUT_BOX
+    }, {
+        "retainScrollPosition": false,
+        "needsIndicatorDuringPostShow": true,
+        "formTransparencyDuringPostShow": "100",
+        "inputAccessoryViewType": constants.FORM_INPUTACCESSORYVIEW_DEFAULT,
+        "bounces": true,
+        "configureExtendTop": false,
+        "configureExtendBottom": false,
+        "configureStatusBarStyle": false,
+        "titleBar": true,
+        "titleBarSkin": "sknTitleKonyTheme",
+        "titleBarConfig": {
+            "renderTitleText": true,
+            "titleBarRightSideView": "button",
+            "titleBarLeftSideView": "button",
+            "imageRightSideView": "home_ico_n.png",
+            "imageLeftSideView": "back_ico.png",
+            "closureRightSideView": showDashboard
+        },
+        "footerOverlap": false,
+        "headerOverlap": false,
+        "inTransitionConfig": {
+            "transitionDirection": "none",
+            "transitionEffect": "none"
+        },
+        "outTransitionConfig": {
+            "transitionDirection": "none",
+            "transitionEffect": "none"
+        },
+        "deprecated": {
+            "titleBarBackGroundImage": "blue_pixel.png"
+        }
+    });
+};

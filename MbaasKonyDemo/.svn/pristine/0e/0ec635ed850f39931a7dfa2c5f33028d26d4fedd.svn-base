@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<application name="MbaasKonyDemo" id="MbaasKonyDemo">
+    <container type="form" id="frmAccountDetails" displayname="Form"/>
+    <container type="form" id="frmAccounts" displayname="Form"/>
+    <container type="form" id="frmContactDetails" displayname="Form"/>
+    <container type="form" id="frmContacts" displayname="Form"/>
+    <container type="form" id="frmLeadDetails" displayname="Form"/>
+    <container type="form" id="frmLeads" displayname="Form"/>
+    <container type="form" id="frmOpportunities" displayname="Form"/>
+    <container type="form" id="frmOpportunityDetails" displayname="Form"/>
+    <container type="form" id="frmDashBoard" displayname="Form"/>
+    <container type="form" id="frmLogin" displayname="Form">
+        <component type="textbox2" id="textUserName" displayname="TextBox2"/>
+        <component type="textbox2" id="textPassword" displayname="TextBox2"/>
+    </container>
+    <globalsequences/>
+    <skins/>
+</application>

@@ -1,0 +1,1028 @@
+/**
+ * Kony namespace
+ * @namespace kony
+ */
+if (typeof(kony) === "undefined") {
+	kony = {};
+}
+
+/**
+ * Constructor for creating the MBaaS client instance.
+ * @class
+ * @classdesc MBaaS Class
+ * @memberof kony
+ */
+kony.mbaas = function () {
+	this.mainRef = {};
+	this.authServices = {};
+	this.integrationServices = {};
+	this.messagingService = null;
+	this.tokens = {};
+}
+
+kony.mbaas.isDebugEnabled = true;
+
+/**
+ * Init success callback method.
+ * @callback initSuccessCallback
+ * @param {json} mainRef - Application Configuration
+ */
+
+ /**
+ * Init failure callback method.
+ * @callback initFailureCallback
+ */
+ 
+/**
+ * Initialization method for the MBaaS SDK.
+ * This method will fetch the app configuration from the MBaaS server and stores in memory.
+ * This method has to be invoked before invoking any other SDK methods.
+ * @param {string} appKey - Appkey of the MBaaS application
+ * @param {string} appSecret - App Secret of the MBaaS application
+ * @param {string} serviceUrl - URL of the MBaaS Server
+ * @param {initSuccessCallback} successCallback  - Callback method on success
+ * @param {initFailureCallback} failureCallback - Callback method on failure
+ */
+kony.mbaas.prototype.init = function (appKey, appSecret, serviceUrl, successCallback, failureCallback) {
+	var logger = new mbaasLogger();
+	var networkProvider = new mbaasNetworkProvider();
+	this.mainRef.appKey = appKey;
+	this.mainRef.appSecret = appSecret;
+	this.mainRef.serviceUrl = serviceUrl;
+	var mbaasRef = this;
+	if (appKey === undefined || appKey == "" || appSecret === undefined || appSecret == "" || serviceUrl === undefined || serviceUrl == "") {
+		logger.log("### init:: Invalid credentials passed");
+		failureCallback("Invalid initialization parameters");
+	}
+
+	var _doInit = function (serviceDoc) {
+		var _processServiceDoc = function (servConfig) {
+			logger.log("### init::_doInit::_processServiceDoc" + JSON.stringify(servConfig));
+			try {
+				mbaasRef.mainRef.appId = servConfig.appId;
+
+				if (servConfig.login != undefined) {
+					logger.log("### init::_doInit::_processServiceDoc parsing AuthServices");
+					mbaasRef.login = servConfig.login;
+				}
+
+				if (servConfig.integsvc != undefined) {
+					logger.log("### init::_doInit::_processServiceDoc parsing Integration services");
+				/*	for (var servName in servConfig.integsvc) {
+						if (servConfig.integsvc.hasOwnProperty(servName) && typeof(servName) !== 'function') {
+							mbaasRef.integrationServices[servName] = new IntegrationService(servConfig.integsvc[servName], servName);
+						}
+					}
+				*/
+					mbaasRef.integsvc = servConfig.integsvc;
+					logger.log("### init::_doInit::mbaasRef integration Services" + JSON.stringify(mbaasRef.integsvc));
+				}
+
+				if (servConfig.messagingsvc != undefined) {
+					logger.log("### init::_doInit::_processServiceDoc parsing Messaging services");
+					//mbaasRef.messagingService = new MessagingService(servConfig.messagingsvc.url);
+					//mbaasRef.messagingService.setKmsAppId(servConfig.messagingsvc.appId);
+					mbaasRef.messagingsvc = servConfig.messagingsvc;
+				}
+				logger.log("### init::_doInit::_processServiceDoc parsing service document done");
+				return true;
+			} catch (err) {
+				logger.log("### init::_doInit::_processServiceDoc failed with an exception: " + err);
+				return false;
+			}
+		};
+
+		if (serviceDoc) {
+			if (_processServiceDoc(serviceDoc)) {
+				logger.log("### init::_doInit processing Service doc successful. Calling success callback");
+				successCallback(mbaasRef.mainRef);
+			} else {
+				logger.log("### init::_doInit processing Service doc failed. Calling failure callback");
+				failureCallback();
+			}
+		} else {
+			logger.log("### init::_doInit calling GET on appConfig to retrieve servicedoc");
+			networkProvider.post(
+				serviceUrl,
+				undefined, {
+				"X-Kony-App-Key" : appKey,
+				"X-Kony-App-Secret" : appSecret,
+				"X-HTTP-Method-Override" : "GET"
+			},
+				function (data) {
+				logger.log("### init::_doInit fetched servicedoc successfuly");
+				logger.log("### init:: retrieved data from service doc");
+				logger.log(data);
+				mbaasRef.mainRef.config = data;
+				mbaasRef.servicedoc = data;
+				mbaasRef.mainRef.appId = data.appId;
+				if (_processServiceDoc(data)) {
+					logger.log("### init::_doInit processing service document successful");
+					var svcDataStr = JSON.stringify(data);
+					logger.log("### init::_doInit saving done. Calling success callback");
+					successCallback(mbaasRef.mainRef);
+				} else {
+					logger.log("### init::_doInit processing servicedoc failed. Calling failure callback");
+					failureCallback();
+				}
+			},
+				function (data) {
+				logger.log("### init::_doInit fetching service document from Server failed" + data);
+				logger.log("### init::_doInit calling failure callback");
+				failureCallback(data);
+			});
+		}
+
+	};
+		logger.log("### init::calling simple _doInit ");
+		_doInit();
+}
+/**
+ * Method to create the Identity service instance with the provided provider name.
+ * @param {string} providerName - Name of the provider
+ * @returns {IdentityService} Identity service instance
+ */
+kony.mbaas.prototype.getIdentityService = function (providerName) {
+			var logger = new mbaasLogger();
+			var provider = null;
+			if(this.login != null){
+				for (var i = 0; i < this.login.length; i++) {
+					var rec = this.login[i];
+					if(rec.prov === providerName){
+						this.rec = rec;
+						provider = new IdentityService(this);
+						break;						
+					}
+						
+				}
+			if(provider === null){
+				throw new Exception(Errors.AUTH_FAILURE, "Invalid providerName");
+			}
+			//TODO: what if the providerName is not passed by the user? 
+			logger.log("### auth:: returning authService for providerName = " + provider.getProviderName());
+			return provider;			
+			}
+
+		}; 
+/**
+ * Should not be called by the developer.
+ * @class
+ * @classdesc Identity service instance for handling login/logout calls.
+ */
+function IdentityService(mbaasRef){
+			var logger = new mbaasLogger();
+			var networkProvider = new mbaasNetworkProvider();
+			var serviceObj = mbaasRef.rec;
+			var mainRef = mbaasRef.mainRef;
+			if (serviceObj === undefined || serviceObj.prov == undefined || serviceObj.type == undefined) {
+				throw new Exception(Errors.INIT_FAILURE, "Invalid service url and service type");
+			}
+
+			var _type = serviceObj.type;
+			var _serviceUrl = stripTrailingCharacter(serviceObj.url, "/"); ;
+			var _providerName = serviceObj.prov;
+
+			logger.log("### AuthService:: initialized for provider " + _providerName + " with type " + _type);
+
+			var dsKey = _serviceUrl + "::" + _providerName + "::" + _type + "::RAW";
+			/**
+			* Login success callback method.
+			* @callback loginSuccessCallback
+			* @param {string} claimsToken - Claims token value
+			*/
+
+			/**
+			* Login failure callback method.
+			* @callback loginFailureCallback
+			* @param {json} error - Error information
+			*/
+			/**
+			 * Login with the given credentials asynchronously and executes the given callback.
+			 * @param {object} options - User name and password
+			 * @param {loginSuccessCallback} successCallback  - Callback method on success
+			 * @param {loginFailureCallback} failureCallback - Callback method on failure
+			 */
+			this.login = function (options, successCallback, failureCallback) {
+
+				logger.log("### AuthService::login Invoked login for provider " + _providerName + " of type " + _type);
+
+				if (typeof(options) == 'undefined') {
+					throw new Exception(Errors.INIT_FAILURE, "Missing required number of arguments to login function");
+				}
+				function invokeAjaxCall(url, params) {
+					networkProvider.post(_serviceUrl + url + "?provider=" + _providerName, params, {
+						"X-Kony-App-Key" : mainRef.appKey,
+						"X-Kony-App-Secret" : mainRef.appSecret
+					},
+						function (data) {
+						logger.log("### AuthService::login successful. Retrieved Data:: ");
+						logger.log(data);
+						mbaasRef.tokens[_providerName] = data;
+						logger.log("### AuthService::login extracted token. Calling success callback");
+						successCallback(data.claims_token.value);
+					},
+						function (data) {
+						logger.log("### AuthService::login login failure. retrieved data:: ");
+						logger.log(data);
+						logger.log("### AuthService::login Calling failure callback");
+						failureCallback(data);
+					});
+				}
+				//TODO: error handling for oauth2 and saml
+				if (_type == "oauth2") {
+					logger.log("### AuthService::login Adapter type is oauth2");
+					
+					OAuthHandler(_serviceUrl, _providerName, invokeAjaxCall,"/oauth2/token");
+
+				} else if (_type == "basic") {
+
+					if (options.userid == undefined || options.password == undefined) {
+						throw new Exception(Errors.INIT_FAILURE, "Require username and password");
+					}
+					
+					logger.log("### AuthService::login Adapter type is basic ");
+					invokeAjaxCall("/login",{
+						"userid" : options.userid,
+						"password" : options.password,
+						"provider" : _providerName
+					});
+				} else if (_type === "saml"){
+					logger.log("### AuthService::login Adapter type is saml");
+					OAuthHandler(_serviceUrl, _providerName, invokeAjaxCall,"/saml/token");
+				
+				}
+			};
+			/**
+			* Logout success callback method.
+			* @callback logoutSuccessCallback
+			*/
+
+			/**
+			* Logout failure callback method.
+			* @callback logoutFailureCallback
+			*/
+			/**
+			 * Logout and executes the given callback.
+			 * @param {logoutSuccessCallback} successCallback  - Callback method on success
+			 * @param {logoutFailureCallback} failureCallback - Callback method on failure
+			 */
+			this.logout = function (successCallback, failureCallback) {
+				logger.log("### AuthService::logout invoked on provider " + _providerName + " of type " + _type);
+				var value = mbaasRef.tokens[_providerName];
+				var claimsToken = value.claims_token.value;
+	
+				delete mbaasRef.tokens[_providerName];
+
+
+				//FIXME: currently logout gives empty text response which results in failure even in good case
+				networkProvider.post(_serviceUrl + "/logout", {}, {
+					"Authorization" : claimsToken,"Accept" : "application/json"
+				},
+					function (data) {
+					logger.log("AuthService::logout successfully logged out. Calling success callback");
+					successCallback({});
+				},
+					function (xhr, status, err) {
+					if (xhr.status == 200) {
+						logger.log("### AuthService::logout successfully logged out. Calling success callback");
+						successCallback({});
+					} else {
+						logger.log("### AuthService::logout logged out Failed. Calling failure callback");
+						failureCallback({});
+					}
+				});
+			};
+			/**
+			 * Option to change password. Not implemented in other platforms hence marking as private
+			 * @private
+			 */
+			this.changePassword = function (options, successCallback, failureCallback) {
+				if (options == undefined || options.old_password == undefined || options.new_password == undefined) {
+					throw new Exception(Errors.INIT_FAILURE, "Missing required arguments");
+				} else {
+					if (mbaasRef.tokens[_providerName]) {
+						var rawToken = mbaasRef.tokens[_providerName];
+						var val = JSON.parse(rawToken);
+						var refreshToken = val.refresh_token;
+
+						var data = {
+							"old_password" : options.old_password,
+							"new_password" : options.new_password
+						};
+
+						networkProvider.post(_serviceUrl + "/change_password",
+							data, {
+							"Authorization" : val.claims_token.value,
+							"Content-Type" : "application/x-www-form-urlencoded"
+						},
+							successCallback,
+							failureCallback);
+
+					} else {
+						failureCallback(null);
+					}
+				}
+			};
+			/**
+			* Fetch claims token callback method.
+			* @callback fetchClaimsTokenSuccessCallback
+			* @param {string} claimsToken - Claims token value
+			*/
+
+			/**
+			* Fetch claims token callback method.
+			* @callback fetchClaimsTokenFailureCallback
+			* @param {json} error - Error information
+			*/
+			/**
+			 * Fetch the claims token.
+			 * @param {boolean} fromserver - Flag to force fetch from server only.
+			 * @param {fetchClaimsTokenSuccessCallback} successCallback  - Callback method on success
+			 * @param {fetchClaimsTokenFailureCallback} failureCallback - Callback method on failure
+			 * @private 
+			 */
+			this.getToken = function (fromserver, successCallback, failureCallback) {
+				logger.log("### AuthService::getToken invoked for provider " + _providerName + " of type " + _type);
+				if (fromserver === true) {
+					logger.log("### AuthService::getToken fetching token from server");
+					_claimsRefresh(null,
+						function (token) {
+						mbaasRef.tokens[_providerName] = token;
+						successCallback(token.claims_token.value);
+					},
+						function (err) {
+						failureCallback(err);
+					});
+				} else {
+					logger.log("### AuthService::getToken Fetching token locally");
+					if (mbaasRef.tokens[_providerName]) {
+						var val = mbaasRef.tokens[_providerName];
+						
+
+						var _exp = val.claims_token.exp;
+						if (_exp && _exp > (new Date().getTime())) {
+							logger.log("### AuthService::getToken token is still valid.");
+							logger.log("### AuthService::getToken extracting token successfull. calling success callback");
+							successCallback(val.claims_token.value);
+						} else {
+							logger.log("### AuthService::getToken token is expired. Fetching from server");
+							_claimsRefresh(null,
+								function (token) {
+								logger.log("### AuthService::getToken fetching token from server successfull");
+								mbaasRef.tokens[_providerName] = val.claims_token.value;
+								logger.log("### AuthService::getToken extracting token successfull. calling success callback");
+								successCallback(token);
+							},
+								function (error) {
+								logger.log("### AuthService::getToken Calling failure callback. fetching token from server failed with response " + error);
+								failureCallback(error);
+							});
+						}
+					} else {
+						logger.log("### AuthService::getToken Calling failure callback. No token info found in localstore with key " + dsKey);
+						return failureCallback(null);
+					}
+				}
+			};
+			/**
+			* Fetch backend token callback method.
+			* @callback fetchBackendTokenSuccessCallback
+			* @param {string} providerToken - Provider token value
+			*/
+
+			/**
+			* Fetch backend token callback method.
+			* @callback fetchBackendTokenFailureCallback
+			* @param {json} error - Error information
+			*/
+			/**
+			 * Fetch the backend datasource token.
+			 * @param {boolean} fromserver - Flag to force fetch from server only.
+			 * @param {object} options - Options
+			 * @param {fetchBackendTokenSuccessCallback} successCallback  - Callback method on success
+			 * @param {fetchBackendTokenFailureCallback} failureCallback - Callback method on failure
+			 */
+			this.getBackendToken = function (fromserver, options, successCallback, failureCallback) {
+				logger.log("### AuthService::getBackendToken called for provider " + _providerName + " of type " + _type);
+				if (fromserver != undefined && fromserver === true) {
+					logger.log("### AuthService::getBackendToken fromserver is enabled. Trying to login");
+					_claimsRefresh(null,
+						function (token) {
+						mbaasRef.tokens[_providerName] = token;
+						successCallback(token.provider_token);
+					},
+						failureCallback);
+				} else {
+					if (mbaasRef.tokens[_providerName]) {
+						var val = mbaasRef.tokens[_providerName];
+						var _exp = val.provider_token.exp;
+						logger.log("token expiry time: " + _exp);
+						logger.log("Current time: " + (new Date().getTime()));
+						if (_exp && _exp < (new Date().getTime())) {
+							logger.log("### AuthService::getBackendToken Token expired. Fetching refresh from claims api");
+							_claimsRefresh(null,
+								function (token) {
+								mbaasRef.tokens[_providerName] = token.claims_token.value;
+								logger.log("### AuthService::getBackendToken fetching refresh successfull. Calling success callback");
+								successCallback(token.provider_token);
+							},
+								function (error) {
+								logger.log("### AuthService::getBackendToken fetching refresh failed. Calling failure callback");
+								failureCallback(error);
+							});
+						} else {
+							logger.log("### AuthService::getBackendToken present token is valid/doesn't have expiry time. Calling success callback");
+							successCallback(val.provider_token);
+						}
+					} else {
+						logger.log("### AuthService::getBackendToken failed for find info for key " + dsKey + "in database. calling failure callback");
+						failureCallback(null);
+					}
+				}
+			};
+			/**
+			* Get profile callback method.
+			* @callback getProfileSuccessCallback
+			* @param {object} profile - Profile object
+			*/
+
+			/**
+			* Get profile callback method.
+			* @callback getProfileFailureCallback
+			*/
+			/**
+			 * Get profile.
+			 * @param {boolean} fromserver - Flag to force fetch from server only.
+			 * @param {getProfileSuccessCallback} successCallback  - Callback method on success
+			 * @param {getProfileFailureCallback} failureCallback - Callback method on failure
+			 */
+			this.getProfile = function (fromserver, successCallback, failureCallback) {
+				if (fromserver && fromserver == true) {
+					_claimsRefresh(null,
+						function (token) {
+						mbaasRef.tokens[_providerName] = token;
+						successCallback(token.profile);
+					},
+						failureCallback)
+				} else {
+					if (mbaasRef.tokens[_providerName]) {
+						var val = mbaasRef.tokens[_providerName]
+						successCallback(val.profile);
+					} else {
+						failureCallback();
+					}
+				}
+			};
+			/**
+			 * Get the provider name.
+			 * @returns {string} Provider name.
+			 */
+			this.getProviderName = function () {
+				return _providerName;
+			};
+			/**
+			 * Get the provider type.
+			 * @returns {string} Provider type.
+			 */
+			this.getProviderType = function () {
+				return _type;
+			};
+			/**
+			 * Method to refresh the claims token.
+			 * @private
+			 */
+			var _claimsRefresh = function (options, success, failure) {
+				logger.log("### AuthService::_claimsRefresh fetching claims from server for provider " + _providerName);
+				var value = mbaasRef.tokens[_providerName];
+				var refreshToken = null;
+				if (value) {
+					refreshToken = value.refresh_token;
+				}
+				var _url = _serviceUrl + "/claims";
+				if (options && options.requestParams != null) {
+					_url = _url + "?"
+						for (var i in options.requestParams) {
+							if (options.requestParams.hasOwnProperty(i) && typeof(i) !== 'function') {
+								_url = _url + (i + "=" + options.requestParams[i] + "&");
+							}
+						}
+						_url = stripTrailingCharacter(_url, "&");
+				}
+				if (refreshToken) {
+					logger.log("### AuthService::_claimsRefresh making POST request to claims endpoint");
+					networkProvider.post(_url, {}, {
+						"Authorization" : refreshToken
+					},
+						function (data) {
+						logger.log("### AuthService::_claimsRefresh Fetching claims succcessfull");
+						mbaasRef.tokens[_providerName] = data;
+						logger.log("### AuthService::_claimsRefresh saved locally. Calling success callback");
+						success(data);
+					},
+						function (xhr, status, err) {
+						logger.log("### AuthService::_claimsRefresh fetching claims failed. Calling failure callback");
+						failure(err);
+					});
+				} else {
+					logger.log("### AuthService::_claimsRefresh no refreshtoken found. calling failure callback");
+					failure();
+				}
+			};
+		};
+/**
+ * Method to create the integration service instance with the provided service name.
+ * @param {string} serviceName - Name of the service
+ * @returns {IntegrationService} Integration service instance
+ */
+kony.mbaas.prototype.getIntegrationService = function (serviceName) {
+	var logger = new mbaasLogger();
+	var integrationService = null;
+	if(this.integsvc != null){
+		if(this.integsvc[serviceName] != null){
+			logger.log("found integration service" + this.integsvc[serviceName]);
+			return new IntegrationService(this, serviceName);
+		}
+	
+	}
+	
+	throw new Exception(Errors.INTEGRATION_FAILURE, "Invalid serviceName");
+		
+};
+/**
+ * Should not be called by the developer.
+ * @class
+ * @classdesc Integration service instance for invoking the integration services.
+ */
+function IntegrationService(mbaasRef, appId) {
+			var logger = new mbaasLogger();
+			var homeUrl = mbaasRef.integsvc[appId];
+			var networkProvider = new mbaasNetworkProvider();
+			if (homeUrl == undefined || appId == undefined) {
+				throw new Exception(Errors.INIT_FAILURE, "Invalid homeUrl and appId");
+			}
+			homeUrl = stripTrailingCharacter(homeUrl, "/");
+			var platform = null;
+			var rcId = null;
+			var channel = null;
+			var url = homeUrl;
+			var appID = appId;
+
+			this.getUrl = function () {
+				return homeUrl;
+			};
+			/**
+			* Integration service success callback method.
+			* @callback integrationSuccessCallback
+			* @param {json} response - Integration service response
+			*/
+
+			/**
+			* Integration service failure callback method.
+			* @callback integrationFailureCallback
+			* @param {json} error - Error information
+			*/
+			/**
+			 * invoke the specified operation 
+			 * @param {string} operationName - Name of the operation
+			 * @param {object} data - Input data to the operation
+			 * @param {integrationSuccessCallback} successCallback  - Callback method on success
+			 * @param {integrationFailureCallback} failureCallback - Callback method on failure
+			 */
+			this.invokeOperation = function (operationName, data, successCallback, failureCallback, optional) {
+				var requestData = {
+					//appID: appID,
+					serviceID : operationName,
+					platform : platform,
+					rcid : rcId,
+					channel : channel
+				};
+				for (var key in data) {
+					requestData[key] = data[key];
+				}
+				var token;
+				for (var i in mbaasRef.tokens) {
+					if (mbaasRef.tokens.hasOwnProperty(i) && typeof(i) !== 'function') {
+						token = mbaasRef.tokens[i];
+						break;
+					}
+				}
+				logger.log("The token after processing is" + JSON.stringify(token));
+
+				if (optional !== undefined && optional.providerName !== undefined) {
+					token = mbaasRef.tokens[optional.providerName];
+				}
+
+				networkProvider.post(homeUrl + "/" + operationName,
+					requestData, {
+					"Content-Type" : "application/x-www-form-urlencoded",
+					"X-Kony-Authorization" : token.claims_token.value
+				},
+					successCallback,
+					function (xhr, status, err) {
+					failureCallback(err);
+				});
+			};
+
+		};
+/**
+ * Method to create the messaging service instance.
+ * @returns {MessagingService} Messaging service instance
+ */
+kony.mbaas.prototype.getMessagingService = function () {
+	return new MessagingService(this);
+}
+
+/**
+ * Should not be called by the developer.
+ * @class
+ * @classdesc Integration service instance for invoking the integration services.
+ *@param reference to mbaas object
+ */
+function MessagingService(mbaasRef) {
+	
+	var homeUrl = mbaasRef.messagingsvc.url;
+	var KSID;
+	var appId = mbaasRef.messagingsvc.appId;
+	var logger = new mbaasLogger();
+	var networkProvider = new mbaasNetworkProvider();	
+	var dsKey = url + ":KMS:AppId";
+
+	this.getUrl = function () {
+		return homeUrl;
+	};
+
+	this.setKSID = function (ksid) {
+		dataStore.setItem(dsKey, ksid);
+		KSID = ksid;
+	};
+
+	this.getKSID = function () {
+		if (!KSID) {
+			KSID = dataStore.getItem(dsKey);
+		}
+		return KSID;
+	};
+
+	this.setKmsAppId = function (id) {
+		appId = id;
+	};
+
+	this.getKmsAppId = function () {
+		return appId;
+	};
+	/**
+	* register success callback method.
+	* @callback registerSuccessCallback
+	* @param {json} response - register response
+	*/
+
+	/**
+	* Register service failure callback method.
+	* @callback registerFailureCallback
+	* @param {json} error - Error information
+	*/
+	/**
+	 * register to messaging service
+	 * @param {string} osType - Type of the operating system
+	 * @param {string} deviceId - Device Id
+	 * @param {string} pnsToken - Token value
+	 * @param {registerSuccessCallback} successCallback - Callback method on success
+	 * @param {registerFailureCallback} failureCallback - Callback method on failure
+	 */
+	this.register = function (osType, deviceId, pnsToken, email, successCallback, failureCallback) {
+		var uri = homeUrl + "/subscribers";
+		jsonParam = {
+			"subscriptionService" : {
+				"subscribe" : {
+					"sid" : pnsToken,
+					"appId" : this.getKmsAppId(),
+					"ufid" : email,
+					"osType" : osType,
+					"deviceId" : deviceId,
+				}
+			}
+		};
+		logger.log(JSON.stringify(jsonParam));
+		networkProvider.post(uri,
+			jsonParam,
+			null,
+			function (data) {
+			KSID = data.id;
+			dataStore.setItem(dsKey, KSID);
+			logger.log("Device registered to KMS with KSID:" + KSID);
+			successCallback(data);
+		},
+			function (data, status, error) {
+
+			logger.log("ERROR: Failed to subscribe device for KMS");
+			failureCallback(data, status, error);
+		});
+	};
+	/**
+	* unregister success callback method.
+	* @callback unregisterSuccessCallback
+	*/
+
+	/**
+	* unregister service failure callback method.
+	* @callback unregisterFailureCallback
+	*/
+	/**
+	 * unregister to messaging service
+	 * @param {unregisterSuccessCallback} successCallback - Callback method on success
+	 * @param {unregisterFailureCallback} failureCallback - Callback method on failure
+	 */
+	this.unregister = function (successCallback, failureCallback) {
+		var uri = homeUrl + "/subscribers/" + this.getKSID();
+		logger.log("unsubscribe uri:" + uri);
+		dataStore.removeItem(dsKey);
+		networkProvider.delete(uri, null, null, successCallback, failureCallback);
+	};
+	/**
+	* Fetch all messages success callback method.
+	* @callback fetchAllMessagesSuccessCallback
+	* @param {json} response - Fetch all messages response
+	*/
+
+	/**
+	* Fetch all messages service failure callback method.
+	* @callback fetchAllMessagesFailureCallback
+	* @param {json} error - Error information
+	*/
+	/**
+	 * Fetch all messages
+	 * @param {fetchAllMessagesSuccessCallback} successCallback - Callback method on success
+	 * @param {fetchAllMessagesFailureCallback} failureCallback - Callback method on failure
+	 */
+	this.fetchAllMessages = function (startIndex, pageSize, successCallback, failureCallback) {
+		var uri = homeUrl + "/messages/fetch";
+
+		payload = {
+			"ksid" : this.getKSID(),
+			"startElement" : startIndex,
+			"elementsPerPage" : pageSize,
+		};
+
+		networkProvider.post(uri, payload, null, successCallback, failureCallback);
+	};
+	/**
+	* Update location service success callback method.
+	* @callback updateLocationSuccessCallback
+	* @param {json} response - Update location response
+	*/
+
+	/**
+	* Update location service failure callback method.
+	* @callback updateLocationFailureCallback
+	* @param {json} error - Error information
+	*/
+	/**
+	 * Update the location
+	 * @param {string} latitude - Latitude value
+	 * @param {string} longitude - Longitude value
+	 * @param {string} locationName - Location name
+	 * @param {updateLocationSuccessCallback} successCallback - Callback method on success
+	 * @param {updateLocationFailureCallback} failureCallback - Callback method on failure
+	 */
+	this.updateGeoLocation= function (latitude, longitude, locationName, successCallback, failureCallback) {
+		var uri = homeUrl + "/location";
+		payload = {
+			"ksid" : this.getKSID(),
+			"latitude" : latitude,
+			"locname" : locationName,
+			"longitude" : longitude,
+		};
+		logger.log("updateLocation payload: " + JSON.stringify(payload));
+		networkProvider.post(uri, payload, null, successCallback, failureCallback);
+	};
+	/**
+	* Mark meesage as read service success callback method.
+	* @callback markReadSuccessCallback
+	* @param {json} response - Mark meesage as read service response
+	*/
+	/**
+	* Mark meesage as read service failure callback method.
+	* @callback markReadFailureCallback
+	* @param {json} error - Error information
+	*/
+	/**
+	 * Mark the message as read for a given message id
+	 * @param {string} messageId - Message id
+	 * @param {markReadSuccessCallback} successCallback - Callback method on success
+	 * @param {markReadFailureCallback} failureCallback - Callback method on failure
+	 */
+	this.markMessageRead = function (fetchId, successCallback, failureCallback) {
+		var uri = homeUrl + "/messages/open/" + fetchId;
+		networkProvider.get(uri, null, null, successCallback, failureCallback);
+
+	};
+	/**
+	* Message content service success callback method.
+	* @callback messageContentSuccessCallback
+	* @param {json} response - Message content service response
+	*/
+	/**
+	* Message content service failure callback method.
+	* @callback messageContentFailureCallback
+	* @param {json} error - Error information
+	*/
+	/**
+	 * Fetches the message conetent for a given message id
+	 * @param {string} messageId - Message id
+	 * @param {messageContentSuccessCallback} successCallback - Callback method on success
+	 * @param {messageContentFailureCallback} failureCallback - Callback method on failure
+	 */
+	this.fetchMessageContent = function (fetchId, successCallback, failureCallback) {
+		var uri = homeUrl + "/messages/content/" + fetchId;
+		networkProvider.get(uri, null, null, successCallback, failureCallback);
+	};
+};
+
+
+
+stripTrailingCharacter = function (str, character) {
+	if (str.substr(str.length - 1) == character) {
+		return str.substr(0, str.length - 1);
+	}
+	return str;
+};
+
+var Constants = {
+	APP_KEY_HEADER : "X-Kony-App-Key",
+	APP_SECRET_HEADER : "X-Kony-App-Secret",
+	AUTHORIZATION_HEADER : "Authorization"
+};
+
+var Errors = {
+	INIT_FAILURE : "INIT_FAILURE",
+	DATA_STORE_EXCEPTION : "DATASTORE_FAILURE",
+	AUTH_FAILURE: "AUTH_FAILURE",
+	INTEGRATION_FAILURE: "INTEGRATION_FAILURE"
+};
+kony.mbaas.prototype.enableDebug = function () {
+	kony.mbaas.isDebugEnabled = true;
+}
+
+kony.mbaas.prototype.disableDebug = function () {
+	kony.mbaas.isDebugEnabled = false;
+}
+//to be removed
+var hashCode = function (str) {
+	var hash = 0;
+	if (str.length == 0)
+		return hash;
+	for (i = 0; i < str.length; i++) {
+		char = str.charCodeAt(i);
+		hash = ((hash << 5) - hash) + char;
+		hash = hash & hash;
+	}
+	return hash;
+};
+
+function Exception(name, message) {
+	return {
+		name : name,
+		message : message
+	};
+};
+
+function OAuthHandler(serviceUrl, providerName, callback,url) {
+	var popBasic ={id:"popUp", skin:null, isModal:false, transparencyBehindThePopup:80};
+	var popLayout ={containerWeight:100, padding:[5,5,5,5], "paddingInPixel": true};
+	var popPSP ={};
+					//to do.. this is a workaround for android browser issue.. need to refactor this code
+	var browserSF = new kony.ui.Browser({
+							"id": "browserSF",
+							"text": "Browser",
+							"isVisible": true,
+							"detectTelNumber": true,
+							"screenLevelWidget": false,
+							"enableZoom": false
+						}, {
+							"margin": [0, 0, 0, 0],
+							"marginInPixel": true,
+							"paddingInPixel": true,
+							"containerWeight": 100
+						}, {});
+	//browserSF.handleRequest = function(){};
+	var popUp = new kony.ui.Popup(popBasic, popLayout, popPSP);
+	popUp.add(browserSF);
+	popUp.show();
+
+	var urlConf = {
+		URL : serviceUrl + "/oauth2/login?provider=" + providerName,
+		requestMethod : constants.BROWSER_REQUEST_METHOD_GET
+	};
+	browserSF.requestURLConfig = urlConf;
+	browserSF.handleRequest = handleRequestCallback;
+	function handleRequestCallback(browserWidget, params) {
+
+		var originalUrl = params["originalURL"];
+		if (typeof(params.queryParams) !== "undefined" && typeof(params.queryParams.code) !== "undefined") {
+			// make request for tokens
+			popUp.dismiss();
+			callback(url,{code:decodeURIComponent(params.queryParams.code)});
+		}
+
+	}
+}
+
+
+function mbaasLogger() {
+	this.log = function (text) {
+		if (kony.mbaas.isDebugEnabled) {
+			kony.print(text);
+		}
+	}
+}
+function mbaasNetworkProvider() {
+	var logger = new mbaasLogger();
+	this.post = function (url, params, headers, successCallback, failureCallback) {
+
+		function networkCallbackStatus(status, result) {
+			if (status === 400) {
+				logger.log("Response:" + JSON.stringify(result));
+				if (result.opstatus !== null && result.opstatus !== undefined && result.opstatus !== 0) {
+					failureCallback(result);
+				} else {
+					successCallback(result);
+				}
+			}
+		}
+		if (headers === undefined || headers === null) {
+			headers = {}
+		}
+		if (headers["Content-Type"] === null || headers["Content-Type"] === undefined) {
+			// headers["Content-Type"] = "application/json"; //setting to default header
+			//headers["Content-Type"] = "application/x-www-form-urlencoded"; //setting to default header
+		}
+		// headers = JSON.stringify(headers);
+
+		if (params === undefined) {
+			params = {};
+		}
+		params.httpheaders = headers;
+		logger.log("Hitting " + url + " with params " + JSON.stringify(params));
+		kony.net.invokeServiceAsync(url, params, networkCallbackStatus, null);
+	};
+};
+
+function mbaasDataStore() {
+	var logger = new mbaasLogger();
+	this.setItem = function (key, value) {
+		logger.log("Setting item:" + value + " with key:" + key);
+		if (typeof(key) !== "string") {
+			throw new KonyException(Errors.DATA_STORE_EXCEPTION, "Invalid Key");
+		} else {
+			try {
+				key = key.replace(/\//gi, "");
+				kony.store.setItem(key, value);
+			} catch (e) {
+				logger.log("Failed to set item in dtastore:" + e);
+			}
+		}
+	};
+
+	this.getItem = function (key) {
+		logger.log("Getting item for key:" + key);
+		if (typeof(key) !== "string") {
+			throw new KonyException(Errors.DATA_STORE_EXCEPTION);
+		} else {
+			key = key.replace(/\//gi, "");
+			var value = kony.store.getItem(key);
+			if (value === null || value === undefined) {
+				logger.log("No value found with key:" + key);
+				return null;
+			} else {
+				return value;
+			}
+		}
+	};
+
+	this.removeItem = function (key) {
+		logger.log("Removing item for key:" + key);
+		if (typeof(key) !== "string") {
+			throw new KonyException(Error.DATA_STORE_EXCEPTION);
+		} else {
+			key = key.replace(/\//gi, "");
+			kony.store.removeItem(key); //If no item with that key exists, the method does not perform any action. Thus no need to check for key availablity.
+		}
+	};
+
+	this.destroy = function () {
+		logger.log("Destroying data store for this app");
+		kony.store.clear();
+	};
+
+	this.getAllItems = function () {
+		logger.log("Getting all item from data store");
+		var items = {};
+		var len = kony.store.length(); //get key length
+		for (var i = 0; i < len; i++) {
+			var key = kony.store.key(i); //get ith key
+			var value = kony.store.getItem(key); //get value
+			items[key] = value; //prepare itemset
+		}
+		return items;
+	}
+};

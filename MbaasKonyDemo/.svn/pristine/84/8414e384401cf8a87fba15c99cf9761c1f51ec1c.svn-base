@@ -1,0 +1,5 @@
+#Thu Jul 10 15:46:32 IST 2014
+httpport=80
+httpsport=443
+middlewarecontext=mbaaskny
+ipaddress=192.168.137.1

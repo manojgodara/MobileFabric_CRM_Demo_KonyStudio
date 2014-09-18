@@ -1,0 +1,204 @@
+//Form JS File
+function frmLogin_frmLogin_init_seq0(eventobject, neworientation) {
+    initMbaas.call(this);
+};
+
+function frmLogin_button13713063141346_onClick_seq0(eventobject) {
+    login.call(this);
+};
+
+function addWidgetsfrmLogin() {
+    var label13713063141294 = new kony.ui.Label({
+        "id": "label13713063141294",
+        "isVisible": true,
+        "text": "SalesForce CRM",
+        "skin": "sknLblAppName"
+    }, {
+        "widgetAlignment": constants.WIDGET_ALIGN_CENTER,
+        "vExpand": false,
+        "hExpand": true,
+        "margin": [5, 19, 5, 15],
+        "padding": [1, 1, 1, 1],
+        "contentAlignment": constants.CONTENT_ALIGN_CENTER,
+        "marginInPixel": false,
+        "paddingInPixel": false,
+        "containerWeight": 6
+    }, {
+        "wrapping": constants.WIDGET_TEXT_WORD_WRAP
+    });
+    var textUserName = new kony.ui.TextBox2({
+        "id": "textUserName",
+        "isVisible": true,
+        "text": null,
+        "secureTextEntry": false,
+        "textInputMode": constants.TEXTBOX_INPUT_MODE_ANY,
+        "keyBoardStyle": constants.TEXTBOX_KEY_BOARD_STYLE_DEFAULT,
+        "placeholder": " Login Id",
+        "autoCapitalize": constants.TEXTBOX_AUTO_CAPITALIZE_NONE,
+        "skin": "tbx2Normal",
+        "focusSkin": "tbx2Focus"
+    }, {
+        "widgetAlignment": constants.WIDGET_ALIGN_CENTER,
+        "vExpand": false,
+        "hExpand": true,
+        "margin": [0, 0, 0, 0],
+        "padding": [5, 1, 5, 1],
+        "contentAlignment": constants.CONTENT_ALIGN_MIDDLE_LEFT,
+        "containerHeightMode": constants.TEXTBOX_DEFAULT_PLATFORM_HEIGHT,
+        "marginInPixel": false,
+        "paddingInPixel": false,
+        "containerWeight": 36
+    }, {
+        "pasteboardType": constants.TEXTBOX_PASTE_BOARD_TYPE_SYSTEM_LEVEL,
+        "leftViewImage": null,
+        "showClearButton": true,
+        "showProgressIndicator": true,
+        "showCloseButton": true,
+        "closeButtonText": "Done",
+        "keyboardActionLabel": constants.TEXTBOX_KEYBOARD_LABEL_DONE,
+        "viewType": constants.TEXTBOX_VIEW_TYPE_DEFAULT,
+        "autoCorrect": false
+    });
+    var line13713063141344 = new kony.ui.Line({
+        "id": "line13713063141344",
+        "isVisible": true,
+        "skin": "lineNormal"
+    }, {
+        "thickness": 1,
+        "margin": [0, 0, 0, 0],
+        "marginInPixel": false,
+        "paddingInPixel": false
+    }, {});
+    var textPassword = new kony.ui.TextBox2({
+        "id": "textPassword",
+        "isVisible": true,
+        "text": null,
+        "secureTextEntry": true,
+        "textInputMode": constants.TEXTBOX_INPUT_MODE_ANY,
+        "keyBoardStyle": constants.TEXTBOX_KEY_BOARD_STYLE_DEFAULT,
+        "placeholder": "Password",
+        "autoCapitalize": constants.TEXTBOX_AUTO_CAPITALIZE_NONE,
+        "skin": "tbx2Normal",
+        "focusSkin": "tbx2Focus"
+    }, {
+        "widgetAlignment": constants.WIDGET_ALIGN_CENTER,
+        "vExpand": false,
+        "hExpand": true,
+        "margin": [0, 0, 0, 0],
+        "padding": [5, 1, 5, 1],
+        "contentAlignment": constants.CONTENT_ALIGN_MIDDLE_LEFT,
+        "containerHeightMode": constants.TEXTBOX_DEFAULT_PLATFORM_HEIGHT,
+        "marginInPixel": false,
+        "paddingInPixel": false,
+        "containerWeight": 36
+    }, {
+        "pasteboardType": constants.TEXTBOX_PASTE_BOARD_TYPE_SYSTEM_LEVEL,
+        "leftViewImage": null,
+        "showClearButton": true,
+        "showProgressIndicator": true,
+        "showCloseButton": true,
+        "closeButtonText": "Done",
+        "keyboardActionLabel": constants.TEXTBOX_KEYBOARD_LABEL_DONE,
+        "viewType": constants.TEXTBOX_VIEW_TYPE_DEFAULT,
+        "autoCorrect": false
+    });
+    var vbox13713063141296 = new kony.ui.Box({
+        "id": "vbox13713063141296",
+        "isVisible": true,
+        "orientation": constants.BOX_LAYOUT_VERTICAL
+    }, {
+        "containerWeight": 100,
+        "margin": [0, 0, 0, 0],
+        "padding": [0, 0, 0, 0],
+        "widgetAlignment": constants.WIDGET_ALIGN_TOP_LEFT,
+        "marginInPixel": false,
+        "paddingInPixel": false,
+        "vExpand": false,
+        "hExpand": true,
+        "layoutType": constants.CONTAINER_LAYOUT_BOX
+    }, {});
+    vbox13713063141296.add(
+    textUserName, line13713063141344, textPassword);
+    var hbox13713063141295 = new kony.ui.Box({
+        "id": "hbox13713063141295",
+        "isVisible": true,
+        "skin": "sknHboxRoundedBorder",
+        "focusSkin": "sknHboxRoundedBorder",
+        "position": constants.BOX_POSITION_AS_NORMAL,
+        "orientation": constants.BOX_LAYOUT_HORIZONTAL
+    }, {
+        "containerWeight": 17,
+        "percent": true,
+        "widgetAlignment": constants.WIDGET_ALIGN_TOP_LEFT,
+        "margin": [5, 0, 5, 15],
+        "padding": [0, 0, 0, 0],
+        "vExpand": false,
+        "marginInPixel": false,
+        "paddingInPixel": false,
+        "layoutType": constants.CONTAINER_LAYOUT_BOX
+    }, {});
+    hbox13713063141295.add(
+    vbox13713063141296);
+    var button13713063141346 = new kony.ui.Button({
+        "id": "button13713063141346",
+        "isVisible": true,
+        "text": "Sign in",
+        "skin": "sknBtnLogin",
+        "focusSkin": "sknBtnLogin",
+        "onClick": frmLogin_button13713063141346_onClick_seq0
+    }, {
+        "widgetAlignment": constants.WIDGET_ALIGN_CENTER,
+        "vExpand": false,
+        "hExpand": true,
+        "margin": [5, 0, 5, 0],
+        "padding": [0, 3, 0, 3],
+        "contentAlignment": constants.CONTENT_ALIGN_CENTER,
+        "displayText": true,
+        "marginInPixel": false,
+        "paddingInPixel": false,
+        "containerWeight": 6
+    }, {
+        "glowEffect": false,
+        "showProgressIndicator": true
+    });
+    frmLogin.add(
+    label13713063141294, hbox13713063141295, button13713063141346);
+};
+
+function frmLoginGlobals() {
+    var MenuId = [];
+    frmLogin = new kony.ui.Form2({
+        "id": "frmLogin",
+        "title": null,
+        "needAppMenu": true,
+        "enabledForIdleTimeout": false,
+        "skin": "sknFrmImgBg",
+        "init": frmLogin_frmLogin_init_seq0,
+        "addWidgets": addWidgetsfrmLogin
+    }, {
+        "padding": [0, 0, 0, 0],
+        "displayOrientation": constants.FORM_DISPLAY_ORIENTATION_PORTRAIT,
+        "paddingInPixel": false,
+        "layoutType": constants.CONTAINER_LAYOUT_BOX
+    }, {
+        "retainScrollPosition": false,
+        "needsIndicatorDuringPostShow": true,
+        "formTransparencyDuringPostShow": "100",
+        "inputAccessoryViewType": constants.FORM_INPUTACCESSORYVIEW_DEFAULT,
+        "bounces": true,
+        "configureExtendTop": false,
+        "configureExtendBottom": false,
+        "configureStatusBarStyle": false,
+        "titleBar": false,
+        "footerOverlap": false,
+        "headerOverlap": false,
+        "inTransitionConfig": {
+            "transitionDirection": "none",
+            "transitionEffect": "none"
+        },
+        "outTransitionConfig": {
+            "transitionDirection": "none",
+            "transitionEffect": "none"
+        }
+    });
+};

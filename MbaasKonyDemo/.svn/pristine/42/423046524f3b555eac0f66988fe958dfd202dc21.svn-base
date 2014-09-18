@@ -1,0 +1,142 @@
+var msgInstance;
+
+/***************************************************************
+iPhone related push code
+**************************************************************/
+function regSuccessiPhoneCallback(regId)
+{
+    msgInstance = client.getMessagingService();
+	deviceId = kony.os.deviceInfo().deviceid;
+	msgInstance.register("iPhone",deviceId,regId,"sreenivasulu.nallakshyam@kony.com" ,regSubscribeSuccess, regSubscribeFailure)
+}
+
+function regFailureiPhoneCallback(errormsg)
+{
+	kony.print("************ JS regFailureCallback() called *********");
+	kony.print(errormsg);
+}
+
+function onlinePushNotificationiPhoneCallback(res)
+{
+ 	frmInbox.segInBox.addAll([ {lblMsg:res["content"]}]);
+	kony.application.dismissLoadingScreen();
+}
+
+function offlinePushNotificationiPhoneCallback(res)
+{
+ 	frmInbox.segInBox.addAll([ {lblMsg:res["content"]}]);
+	kony.application.dismissLoadingScreen();
+}
+
+function unregSuccessiPhoneCallback(){};
+function unregFailureiPhoneCallback(){};
+function callbackiPhoneSetCallbacks()
+{
+	var callbacksTable = {onsuccessfulregistration: regSuccessiPhoneCallback, onfailureregistration: regFailureiPhoneCallback, onlinenotification: onlinePushNotificationiPhoneCallback, offlinenotification: offlinePushNotificationiPhoneCallback, onsuccessfulderegistration: unregSuccessiPhoneCallback, onfailurederegistration: unregFailureiPhoneCallback}; 
+	kony.push.setCallbacks(callbacksTable);
+}
+function callbackiPhoneRegister()
+{
+	var notificationTypes = [0, 1, 2];
+	kony.push.register(notificationTypes);
+}
+/***********************************************************************
+comon code to fetch all messages
+*************************************************************************/
+
+function fetchMsgFailure(error)
+{
+	kony.print(JSON.stringify(error));
+	kony.application.dismissLoadingScreen();
+}
+function fetchMsgSuccess(response)
+{
+	kony.print(JSON.stringify(response));
+	kony.application.dismissLoadingScreen();
+}
+function regSubscribeSuccess()
+{
+	msgInstance.fetchAllMessages("1","10",fetchMsgSuccess, fetchMsgFailure);
+}
+function regSubscribeFailure()
+{
+	kony.application.dismissLoadingScreen();
+}
+/***************************************************************
+android related push code
+**************************************************************/
+function callbackAndroidRegister()
+{
+    var configToRegister = {
+        senderid: "208976063116"
+    };
+    kony.push.register(configToRegister);
+}
+function unregFailureAndroidCallback(res){};
+function unregSuccessAndroidCallback(res){};
+
+function offlinePushNotificationAndroidCallback(res)
+{
+    frmInbox.segInBox.addAll([ {lblMsg:res["content"]}]);
+	kony.application.dismissLoadingScreen();
+}
+function onlinePushNotificationAndroidCallback(res)
+{
+	frmInbox.segInBox.addAll([ {lblMsg:res["content"]}]);
+	kony.application.dismissLoadingScreen();
+}
+function regFailureAndroidCallback(res)
+{
+    kony.print("registration failed " + JSON.stringify(res));
+    kony.application.dismissLoadingScreen();
+}
+
+function regSuccessAndroidCallback(regId) 
+{
+    kony.print("Registerd to Android push server: " + regId);
+    msgInstance = client.getMessagingService();
+	deviceId = kony.os.deviceInfo().deviceid;
+	msgInstance.register("androidgcm",deviceId,regId,"sreenivasulu.nallakshyam@kony.com" ,regSubscribeSuccess, regSubscribeFailure)
+}
+function callbackAndroidSetCallbacks()
+{
+    kony.push.setCallbacks({
+        onsuccessfulregistration: regSuccessAndroidCallback,
+        onfailureregistration: regFailureAndroidCallback,
+        onlinenotification: onlinePushNotificationAndroidCallback,
+        offlinenotification: offlinePushNotificationAndroidCallback,
+        onsuccessfulderegistration: unregSuccessAndroidCallback,
+        onfailurederegistration: unregFailureAndroidCallback
+    });
+}
+
+/***************************************************************
+Register method to register the device with Push notification provider
+**************************************************************/
+function register() 
+{
+	if(kony.os.deviceInfo().name == "iPhone" ||kony.os.deviceInfo().name == "iPhone Simulator")
+	{
+		alert("TBD");//remove this condition once push environment is ready for iphone
+		return;
+	}
+ 	if(kony.os.deviceInfo().name == "iPhone" ||kony.os.deviceInfo().name == "iPhone Simulator" ||  kony.os.deviceInfo().name == "iPad"  )
+		kony.application.showLoadingScreen("sknLoading","Please wait...",constants.LOADING_SCREEN_POSITION_FULL_SCREEN, true, true,{shouldShowLabelInBottom :true,separatorHeight:30});
+	else
+		kony.application.showLoadingScreen("sknLoading","Please wait...",constants.LOADING_SCREEN_POSITION_FULL_SCREEN, true, true,null);
+	if(frmInbox.segInBox.data == null||frmInbox.segInBox.data ==[])
+		frmInbox.segInBox.addDataAt({lblMsg:"Please push the messages from cloud."}, 0);
+ 	frmInbox.show();
+ 	if(kony.os.deviceInfo().name == "iPhone" ||kony.os.deviceInfo().name == "iPhone Simulator")
+ 	{
+ 		callbackiPhoneSetCallbacks();
+		callbackiPhoneRegister();
+ 	}
+ 	else
+ 	{
+ 		callbackAndroidSetCallbacks();
+    	callbackAndroidRegister();
+ 	}
+}
+
+

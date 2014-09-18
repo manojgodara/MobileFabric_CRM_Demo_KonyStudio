@@ -1,0 +1,64 @@
+var identityInstance;
+var accessToken;
+
+function backendTokenSuccessServer(result) 
+{
+	accessToken = result.params.token_type+" "+result.params.access_token;
+}
+function backendTokenSuccessLocal(result) 
+{
+	accessToken = result.params.token_type+" "+result.params.access_token;
+}
+function backendTokenFailure(error)
+{
+    kony.print("backend token failure  : " + JSON.stringify(error));
+}
+function tokens() 
+{
+    identityInstance.getBackendToken(true,{ "userid": frmLogin.textUserName.text,"password": frmLogin.textPassword.text}, backendTokenSuccessServer, backendTokenFailure);
+    identityInstance.getBackendToken(false,{"userid": frmLogin.textUserName.text,"password": frmLogin.textPassword.text}, backendTokenSuccessLocal, backendTokenFailure);
+}
+function logout()
+{
+    identityInstance.logout( function(){frmLogin.show()}, function(){ alert("Logout failed")}  );
+}
+
+function showDashboard()
+{
+	frmDashBoard.show();
+}
+function identitySuccess(res)
+{
+    frmDashBoard.show();
+    tokens();
+    kony.application.dismissLoadingScreen();
+}
+function identityError(error) 
+{
+    var basicConf = {
+        message: JSON.stringify(error),
+        alertType: constants.ALERT_TYPE_INFO,
+        alertTitle: "Login Failure"
+    };
+    kony.ui.Alert(basicConf, {});
+    kony.application.dismissLoadingScreen();
+    
+}
+function login() 
+{
+	try 
+    {
+        identityInstance = client.getIdentityService("CRM");
+    } 
+    catch (exception) 
+    {
+        kony.print("exception " + exception.message);
+    }
+    if(kony.os.deviceInfo().name == "iPhone" || kony.os.deviceInfo().name == "iPad"  )
+		kony.application.showLoadingScreen("sknLoading","Please wait...",constants.LOADING_SCREEN_POSITION_FULL_SCREEN, true, true,{shouldShowLabelInBottom :true,separatorHeight:30});
+	else
+		kony.application.showLoadingScreen("sknLoading","Please wait...",constants.LOADING_SCREEN_POSITION_FULL_SCREEN, true, true,null);
+			
+    identityInstance.login({"userid": frmLogin.textUserName.text,"password": frmLogin.textPassword.text}, identitySuccess,identityError );
+}
+

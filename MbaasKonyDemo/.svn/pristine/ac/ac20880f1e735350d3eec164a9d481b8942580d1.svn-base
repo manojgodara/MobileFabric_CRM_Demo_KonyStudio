@@ -1,0 +1,153 @@
+var identityInstance;
+var accessToken;
+/**
+****************************************************************
+*	Name    : backendTokenSuccessServer
+*	Author  : Kony
+*	Purpose : If we are able to fetch back end token from server then this method will get invoked
+****************************************************************
+*/
+function backendTokenSuccessServer(result) //result is nothing but backend token object
+{
+	accessToken = result.params.token_type+" "+result.params.access_token;//formatting the back end token to invoke integration services
+}
+/**
+****************************************************************
+*	Name    : backendTokenSuccessLocal
+*	Author  : Kony
+*	Purpose : If we are able to fetch back end token from local db then this method will get invoked
+****************************************************************
+*/
+function backendTokenSuccessLocal(result) //result is nothing but backend token object
+{
+	accessToken = result.params.token_type+" "+result.params.access_token;//formatting the back end token to invoke integration services
+}
+/**
+****************************************************************
+*	Name    : backendTokenFailure
+*	Author  : Kony
+*	Purpose : If we are unable to fetch back end token from server or local db then this method will get invoked
+****************************************************************
+*/
+function backendTokenFailure(error)
+{
+    kony.print("backend token failure  : " + JSON.stringify(error));
+}
+/**
+****************************************************************
+*	Name    : tokens
+*	Author  : Kony
+*	Purpose : invoke getBackendToken method using identityInstance to get the backend token object which will be used to retrive salesforce contacts etc details.
+****************************************************************
+*/
+function tokens() 
+{
+    identityInstance.getBackendToken(true,//Fetch token from server
+    { "userid": frmLogin.textUserName.text,"password": frmLogin.textPassword.text},//salesforce credentials
+     backendTokenSuccessServer,//getBackendToken success callback
+      backendTokenFailure);//getBackendToken failure callback
+    identityInstance.getBackendToken(false,//Fetch token from local db
+    {"userid": frmLogin.textUserName.text,"password": frmLogin.textPassword.text},//salesforce credentials
+     backendTokenSuccessLocal,//getBackendToken success callback
+      backendTokenFailure);//getBackendToken failure callback
+}
+
+/**
+****************************************************************
+*	Name    : logout
+*	Author  : Kony
+*	Purpose : Logout from salesforce account using logut method of identityInstance
+****************************************************************
+*/
+function logout()
+{
+    identityInstance.logout( function()//success callback
+    {
+    	frmLogin.textPassword.text="";
+    	frmLogin.textUserName.text="";
+    	frmLogin.show();
+    },
+     function()//failure callback
+    { 
+    	alert("Logout failed")
+    }  );
+}
+/**
+****************************************************************
+*	Name    : showDashboard
+*	Author  : Kony
+*	Purpose : To show dashboard form onclick of home button in iOS contact details page
+****************************************************************
+*/
+function showDashboard()
+{
+	frmDashBoard.show();
+}
+
+/**
+****************************************************************
+*	Name    : identitySuccess
+*	Author  : Kony
+*	Purpose : Login success callback
+****************************************************************
+*/
+function identitySuccess(res)
+{
+    frmDashBoard.show();//show dashboard form
+    tokens();//get backend token
+    kony.application.dismissLoadingScreen();
+}
+/**
+****************************************************************
+*	Name    : identityError
+*	Author  : Kony
+*	Purpose : Login failure callback
+****************************************************************
+*/
+function identityError(error) 
+{
+    var basicConf = {
+        message: JSON.stringify(error),//display the error message
+        alertType: constants.ALERT_TYPE_INFO,
+        alertTitle: "Login Failure"
+    };
+    kony.ui.Alert(basicConf, {});
+    kony.application.dismissLoadingScreen();
+    
+}
+/**
+****************************************************************
+*	Name    : login
+*	Author  : Kony
+*	Purpose : This function will make use of MBaaS identity service.
+****************************************************************
+*/
+function login() 
+{
+	if(frmLogin.textUserName.text =="" ||frmLogin.textUserName.text ==null||frmLogin.textPassword.text==""||frmLogin.textPassword.text==null)
+	{
+		alert("Login Id and Password should not be empty");
+		return;
+	}
+	else
+	{
+		try 
+	    {
+	    	//Let's make use of MBaaS client instance to invoke getIdentityService method 
+	        identityInstance = client.getIdentityService("CRM");//CRM is the provider name or identity name of your Identity service and identityInstance is Identity service instance for handling login/logout calls.
+	    } 
+	    catch (exception) 
+	    {
+	        kony.print("exception " + exception.message);
+	    }
+	    if(kony.os.deviceInfo().name == "iPhone" || kony.os.deviceInfo().name == "iPhone Simulator" ||kony.os.deviceInfo().name == "iPad"  )
+			kony.application.showLoadingScreen("sknLoading","Please wait...",constants.LOADING_SCREEN_POSITION_FULL_SCREEN, true, true,{shouldShowLabelInBottom :true,separatorHeight:30});
+		else
+			kony.application.showLoadingScreen("sknLoading","Please wait...",constants.LOADING_SCREEN_POSITION_FULL_SCREEN, true, true,null);
+		// Invoking login mehod using identityInstance will do login with the given credentials asynchronously and executes the given callback. 				
+	     identityInstance.login({"userid": frmLogin.textUserName.text,"password": frmLogin.textPassword.text},//salesforce credentials
+	     identitySuccess,//login success callback
+	     identityError );//login error callback
+	}
+}
+

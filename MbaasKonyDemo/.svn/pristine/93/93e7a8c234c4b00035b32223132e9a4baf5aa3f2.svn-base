@@ -1,0 +1,6 @@
+#
+#Fri Jul 04 20:12:54 IST 2014
+KForm.win_transitionMode=Parallel
+KForm.win_outtransition=Slide
+KForm.win_animateheaderfooter=false
+KForm.win_intransition=Slide

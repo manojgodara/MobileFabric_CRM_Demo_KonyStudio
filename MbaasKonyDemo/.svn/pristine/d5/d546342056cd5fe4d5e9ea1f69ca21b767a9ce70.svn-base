@@ -1,0 +1,393 @@
+var contactDetails=[],opportDetails=[],leadDetails=[],accountDetails=[];
+
+/**
+****************************************************************
+*	Name    : showLeadDetails
+*	Author  : Kony
+*	Purpose : This function is to display the lead details in lead details form
+****************************************************************
+*/
+function showLeadDetails(leadDetails,leadIndex)
+{
+	frmLeadDetails.lblLeadDetName.text =leadDetails[leadIndex].firstname+" "+leadDetails[leadIndex].lastname;
+	if(leadDetails[leadIndex].title==null||leadDetails[leadIndex].title==""||leadDetails[leadIndex].title=="null")
+		frmLeadDetails.lblLeadDetTtl.text="No title";
+	else
+		frmLeadDetails.lblLeadDetTtl.text=leadDetails[leadIndex].title;
+	frmLeadDetails.lblLeadDetFName.text = leadDetails[leadIndex].firstname;
+	frmLeadDetails.lblLeadDetLName.text = leadDetails[leadIndex].lastname;
+	if(leadDetails[leadIndex].phone==null||leadDetails[leadIndex].phone==""||leadDetails[leadIndex].phone=="null")
+		frmLeadDetails.lblLeadDetPhone.text="No details";
+	else
+		frmLeadDetails.lblLeadDetPhone.text=leadDetails[leadIndex].phone;
+	if(leadDetails[leadIndex].email==null||leadDetails[leadIndex].email==""||leadDetails[leadIndex].email=="null")
+		frmLeadDetails.lblLeadDetEmail.text="No details";
+	else
+		frmLeadDetails.lblLeadDetEmail.text=leadDetails[leadIndex].email;
+	frmLeadDetails.show();
+}
+/**
+****************************************************************
+*	Name    : leadsSuccessCallback
+*	Author  : Kony
+*	Purpose : This function is to display the lead details in leads form
+****************************************************************
+*/
+function leadsSuccessCallback(response)
+{
+	var lblLeadName,lblLeadTitle;
+	var leadList =[];
+	var tempLead ={};
+	if(response.list!=undefined &&response.list!=null&&response.opstatus==0)
+	{
+		if(response.list.length==0)
+		{
+			alert("No records found");
+			kony.application.dismissLoadingScreen();
+			return;
+		}
+		else
+		{
+			leadDetails = response.list;
+			for(var i=0;i<response.list.length;i++)
+			{
+				tempLead={};
+				tempLead.lblLeadName=response.list[i].firstname+" "+response.list[i].lastname;
+				if(response.list[i].title==null||response.list[i].title==""||response.list[i].title=="null")
+					tempLead.lblLeadTitle="No title";
+				else
+					tempLead.lblLeadTitle=response.list[i].title;
+				leadList.push(tempLead);
+			}
+			frmLeads.segLeads.removeAll();
+			frmLeads.segLeads.setData(leadList);
+			frmLeads.show();
+		    kony.application.dismissLoadingScreen();
+		}
+	}
+	else
+	{
+		alert("Service failed");
+		kony.application.dismissLoadingScreen();
+		return;
+	}
+}
+/**
+****************************************************************
+*	Name    : showOpportDetails
+*	Author  : Kony
+*	Purpose : This function is to display the opportunity details in opportunity details form
+****************************************************************
+*/
+function showOpportDetails(opportDetails,opportIndex)
+{
+	frmOpportunityDetails.lblOpportDetName.text =opportDetails[opportIndex].name;
+	if(opportDetails[opportIndex].opptype == "null")
+		frmOpportunityDetails.lblContactDetOppType.text="No cutomer type found";
+	else
+		frmOpportunityDetails.lblContactDetOppType.text=opportDetails[opportIndex].opptype;
+	frmOpportunityDetails.lblOpportAccntName.text = opportDetails[opportIndex].accountname;
+	if(opportDetails[opportIndex].amount=="null")
+		frmOpportunityDetails.lblOpportDetAmt.text = "No details found";
+	else
+		frmOpportunityDetails.lblOpportDetAmt.text = opportDetails[opportIndex].amount;
+	if(opportDetails[opportIndex].expectedrevenue=="null")
+		frmOpportunityDetails.lblOpportDetER.text="No details found";
+	else
+		frmOpportunityDetails.lblOpportDetER.text=opportDetails[opportIndex].expectedrevenue;
+	frmOpportunityDetails.lblOpportDetCloseDate.text=opportDetails[opportIndex].closedate;
+	if(opportDetails[opportIndex].leadsource=="null")
+		frmOpportunityDetails.lblOpportDetLSource.text="No details found";
+	else
+		frmOpportunityDetails.lblOpportDetLSource.text=opportDetails[opportIndex].leadsource;
+	frmOpportunityDetails.imgOpprtProbBig.src="p"+opportDetails[opportIndex].probability.split(".")[0]+".png";
+	frmOpportunityDetails.show();
+}
+/**
+****************************************************************
+*	Name    : opportsSuccessCallback
+*	Author  : Kony
+*	Purpose : This function is to display the opportunity details in opportunities form
+****************************************************************
+*/
+function opportsSuccessCallback(response)
+{
+	var lblOpportName,lblOpportStage,lblOpportType,imgOpportProb;
+	var opportList =[];
+	var tempOpport ={};
+	if(response.list!=undefined &&response.list!=null&&response.opstatus==0)
+	{
+		if(response.list.length==0)
+		{
+			alert("No records found");
+			kony.application.dismissLoadingScreen();
+			return;
+		}
+		else
+		{
+			opportDetails = response.list;
+			for(var i=0;i<response.list.length;i++)
+			{
+				tempOpport={};
+				tempOpport.lblOpportName=response.list[i].name;
+				tempOpport.lblOpportStage=response.list[i].stagename;
+				if(response.list[i].opptype=="null")
+					tempOpport.lblOpportType="Customer type not found";
+				else
+					tempOpport.lblOpportType=response.list[i].opptype;
+				tempOpport.imgOpportProb="p"+response.list[i].probability.split(".")[0]+".png";
+				opportList.push(tempOpport);
+			}
+			frmOpportunities.segOpportunities.removeAll();
+			frmOpportunities.segOpportunities.setData(opportList);
+			frmOpportunities.show();
+		    kony.application.dismissLoadingScreen();
+		}
+	}
+	else
+	{
+		alert("Service failed");
+		kony.application.dismissLoadingScreen();
+		return;
+	}
+}	
+/**
+/**
+****************************************************************
+*	Name    : showAccountDetails
+*	Author  : Kony
+*	Purpose : This function is to display the account details in account details form
+****************************************************************
+*/
+function showAccountDetails(accountDetails,accountIndex)
+{
+	frmAccountDetails.lblAccountDetName.text =accountDetails[accountIndex].name;
+	if(accountDetails[accountIndex].accounttype==null||accountDetails[accountIndex].accounttype==""||accountDetails[accountIndex].accounttype=="null")
+		frmAccountDetails.lblAccountDetType.text="Cutomer type not found";
+	else
+		frmAccountDetails.lblAccountDetType.text=accountDetails[accountIndex].accounttype;
+	if(accountDetails[accountIndex].website=="null")
+		frmAccountDetails.lblAccountDetWebSite.text = "No details";
+	else
+		frmAccountDetails.lblAccountDetWebSite.text = accountDetails[accountIndex].website;
+	if(accountDetails[accountIndex].annualrevenue=="null")
+		frmAccountDetails.lblAccountDetAnnualRevenue.text = "No details";
+	else
+		frmAccountDetails.lblAccountDetAnnualRevenue.text = accountDetails[accountIndex].annualrevenue;
+	if(accountDetails[accountIndex].phone==null||accountDetails[accountIndex].phone==""||accountDetails[accountIndex].phone=="null")
+		frmAccountDetails.lblAccountDetPhone.text="No details";
+	else
+		frmAccountDetails.lblAccountDetPhone.text=accountDetails[accountIndex].phone;
+	if(accountDetails[accountIndex].billingstreet=="null"&&accountDetails[accountIndex].billingcity=="null"||accountDetails[accountIndex].billingstate=="null")
+		frmAccountDetails.lblAccountDetBillingAddr.text="No details";
+	else
+		frmAccountDetails.lblAccountDetBillingAddr.text=accountDetails[accountIndex].billingstreet+", "+accountDetails[accountIndex].billingcity+", "+accountDetails[accountIndex].billingstate;
+	frmAccountDetails.show();
+}
+/**
+****************************************************************
+*	Name    : accountSuccessCallback
+*	Author  : Kony
+*	Purpose : This function is to display the account details in accounts form
+****************************************************************
+*/
+function accountSuccessCallback(response)//responce is JSON object which will have all the accounts related to the salesforce account through which we login.
+{
+	var lblAccountName,lblAccountType;
+	var accountList =[];
+	var tempAccount ={};
+	if(response.list!=undefined &&response.list!=null&&response.opstatus==0)
+	{
+		if(response.list.length==0)
+		{
+			alert("No records found");
+			kony.application.dismissLoadingScreen();
+			return;
+		}
+		else
+		{
+			accountDetails = response.list;//accountDetails will have all the records which may be used later to display more details of an account. 
+			for(var i=0;i<response.list.length;i++)
+			{
+				tempAccount={};
+				tempAccount.lblAccountName=response.list[i].name;
+				if(response.list[i].accounttype==null||response.list[i].accounttype==""||response.list[i].accounttype=="null")
+					tempAccount.lblAccountType="Cutomer type not found";
+				else
+					tempAccount.lblAccountType=response.list[i].accounttype;
+				accountList.push(tempAccount);
+			}
+			frmAccounts.segAccounts.removeAll();
+			frmAccounts.segAccounts.setData(accountList);
+			frmAccounts.show();
+		    kony.application.dismissLoadingScreen();
+		}
+	}
+	else
+	{
+		alert("Service failed");
+		kony.application.dismissLoadingScreen();
+		return;
+	}
+}
+/**
+****************************************************************
+*	Name    : showContactDetails
+*	Author  : Kony
+*	Purpose : This function is to display the contact details in contact details form
+****************************************************************
+*/
+function showContactDetails(contactDetails,contactIndex)
+{
+	frmContactDetails.lblContactDetName.text =contactDetails[contactIndex].firstname+" "+contactDetails[contactIndex].lastname;
+	if(contactDetails[contactIndex].title==null||contactDetails[contactIndex].title==""||contactDetails[contactIndex].title=="null")
+		frmContactDetails.lblContactDetTtl.text="No title";
+	else
+		frmContactDetails.lblContactDetTtl.text=contactDetails[contactIndex].title;
+	frmContactDetails.lblContactDetFName.text = contactDetails[contactIndex].firstname;
+	frmContactDetails.lblContactDetLName.text = contactDetails[contactIndex].lastname;
+	if(contactDetails[contactIndex].phone==null||contactDetails[contactIndex].phone==""||contactDetails[contactIndex].phone=="null")
+		frmContactDetails.lblContactDetPhone.text="No details";
+	else
+		frmContactDetails.lblContactDetPhone.text=contactDetails[contactIndex].phone;
+	if(contactDetails[contactIndex].email==null||contactDetails[contactIndex].email==""||contactDetails[contactIndex].email=="null")
+		frmContactDetails.lblContactDetEmail.text="No details";
+	else
+		frmContactDetails.lblContactDetEmail.text=contactDetails[contactIndex].email;
+	frmContactDetails.show();
+}
+/**
+****************************************************************
+*	Name    : contactSuccessCallback
+*	Author  : Kony
+*	Purpose : This function is to display the contact details in contacts form
+****************************************************************
+*/
+function contactSuccessCallback(response)
+{
+	var lblContactName,lblContactTitle;
+	var contactList =[];
+	var tempContact ={};
+	if(response.list!=undefined &&response.list!=null&&response.opstatus==0)
+	{
+		if(response.list.length==0)
+		{
+			alert("No records found");
+			kony.application.dismissLoadingScreen();
+			return;
+		}
+		else
+		{
+			contactDetails = response.list;
+			for(var i=0;i<response.list.length;i++)
+			{
+				tempContact={};
+				tempContact.lblContactName=response.list[i].firstname+" "+response.list[i].lastname;
+				if(response.list[i].title==null||response.list[i].title==""||response.list[i].title=="null")
+					tempContact.lblContactTitle="No title";
+				else
+					tempContact.lblContactTitle=response.list[i].title;
+				contactList.push(tempContact);
+			}
+			frmContacts.segContacts.removeAll();
+			frmContacts.segContacts.setData(contactList);
+			frmContacts.show();
+		    kony.application.dismissLoadingScreen();
+		}
+	}
+	else
+	{
+		alert("Service failed");
+		kony.application.dismissLoadingScreen();
+		return;
+	}
+}
+/**
+****************************************************************
+*	Name    : integFailureCallback
+*	Author  : Kony
+*	Purpose : This function is common error callback for all the integration services
+****************************************************************
+*/
+function integFailureCallback(error)
+{
+	var basicConf = {
+        message: JSON.stringify(error),
+        alertType: constants.ALERT_TYPE_INFO,
+        alertTitle: "Login Failure"
+    };
+    kony.ui.Alert(basicConf, {});
+    kony.application.dismissLoadingScreen();
+}
+/**
+****************************************************************
+*	Name    : getContacts
+*	Author  : Kony
+*	Purpose : This function is to fetch salesforce contact details by 'getIntegrationService' method.
+****************************************************************
+*/
+function getContacts()
+{
+	var contactClient;
+	if(kony.os.deviceInfo().name == "iPhone" ||kony.os.deviceInfo().name == "iPhone Simulator" || kony.os.deviceInfo().name == "iPad"  )
+		kony.application.showLoadingScreen("sknLoading","Please wait...",constants.LOADING_SCREEN_POSITION_FULL_SCREEN, true, true,{shouldShowLabelInBottom :true,separatorHeight:30});
+	else
+		kony.application.showLoadingScreen("sknLoading","Please wait...",constants.LOADING_SCREEN_POSITION_FULL_SCREEN, true, true,null);
+	contactClient = client.getIntegrationService("Contacts");
+	contactClient.invokeOperation("getContacts", {"Authorization":accessToken}, contactSuccessCallback, integFailureCallback)
+}
+/**
+****************************************************************
+*	Name    : getLeads
+*	Author  : Kony
+*	Purpose : This function is to fetch salesforce lead details by 'getIntegrationService' method.
+****************************************************************
+*/
+function getLeads()
+{
+	var leadClient;
+	if(kony.os.deviceInfo().name == "iPhone" ||kony.os.deviceInfo().name == "iPhone Simulator" ||  kony.os.deviceInfo().name == "iPad"  )
+		kony.application.showLoadingScreen("sknLoading","Please wait...",constants.LOADING_SCREEN_POSITION_FULL_SCREEN, true, true,{shouldShowLabelInBottom :true,separatorHeight:30});
+	else
+		kony.application.showLoadingScreen("sknLoading","Please wait...",constants.LOADING_SCREEN_POSITION_FULL_SCREEN, true, true,null);
+	leadClient = client.getIntegrationService("Leads");
+	leadClient.invokeOperation("getLeads", {"Authorization":accessToken}, leadsSuccessCallback, integFailureCallback)
+}
+/**
+****************************************************************
+*	Name    : getOpportunities
+*	Author  : Kony
+*	Purpose : This function is to fetch salesforce opportunity details by 'getIntegrationService' method.
+****************************************************************
+*/
+function getOpportunities()
+{
+	var opportsClient;
+	if(kony.os.deviceInfo().name == "iPhone" ||kony.os.deviceInfo().name == "iPhone Simulator" ||  kony.os.deviceInfo().name == "iPad"  )
+		kony.application.showLoadingScreen("sknLoading","Please wait...",constants.LOADING_SCREEN_POSITION_FULL_SCREEN, true, true,{shouldShowLabelInBottom :true,separatorHeight:30});
+	else
+		kony.application.showLoadingScreen("sknLoading","Please wait...",constants.LOADING_SCREEN_POSITION_FULL_SCREEN, true, true,null);
+	opportsClient = client.getIntegrationService("Opportunities");
+	opportsClient.invokeOperation("getOpportunities", {"Authorization":accessToken}, opportsSuccessCallback, integFailureCallback)
+}
+/**
+****************************************************************
+*	Name    : getAccounts
+*	Author  : Kony
+*	Purpose : This function is to fetch salesforce account details by 'getIntegrationService' method.
+****************************************************************
+*/
+function getAccounts()
+{
+	var accountsClient;
+	if(kony.os.deviceInfo().name == "iPhone" ||kony.os.deviceInfo().name == "iPhone Simulator" ||  kony.os.deviceInfo().name == "iPad"  )
+		kony.application.showLoadingScreen("sknLoading","Please wait...",constants.LOADING_SCREEN_POSITION_FULL_SCREEN, true, true,{shouldShowLabelInBottom :true,separatorHeight:30});
+	else
+		kony.application.showLoadingScreen("sknLoading","Please wait...",constants.LOADING_SCREEN_POSITION_FULL_SCREEN, true, true,null);
+	//Let's make use of MBaaS client instance to invoke getIntegrationService method.
+	accountsClient = client.getIntegrationService("Accounts");//Accounts is service name and accountsClient is Accounts integration service instance
+	accountsClient.invokeOperation("getAccounts",//getAccounts is operation name of Accounts service
+	 {"Authorization":accessToken},//accessToken is backend token that we formatted after sucessful login 
+	 accountSuccessCallback,//integration service success callback
+	 integFailureCallback);//integration service failure callback
+}
