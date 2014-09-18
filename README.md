@@ -7,8 +7,8 @@ This application will showcase how to use JS MBaaS SDK to invoke identity, integ
 
 1. Download the project
 2. Import project to your Kony IDE.
-3. In the project,go to js folder under modules and open 'config.js' file
-4. Configure your app secret,app key, service URL that you got from your Kony MobileFabric console after app configuration and configure your sales force accounts details. Please look at config.js file below for more information.
+3. In the project, Go to js folder under modules and open 'config.js' file
+4. Configure your app secret,app key, service URL that you got from your Kony MobileFabric console after app configuration and configure your salesforce developer accounts details. Please look at config.js file below for more information.
 5. Build and run the app
  
 config.js:
