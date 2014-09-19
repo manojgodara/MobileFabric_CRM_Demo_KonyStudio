@@ -8,7 +8,22 @@ This application will showcase how to use JS MBaaS SDK to invoke identity, integ
 1. Download the project
 2. Import project to your Kony IDE.
 3. In the project, Go to js folder under modules and open 'config.js' file
-4. Configure your app secret,app key, service URL that you got from your Kony MobileFabric console after app configuration and configure your salesforce developer accounts details. Please look at config.js file below for more information.
+4. Write down below required details in the space provided against each parameter in config.js file.
+
+	* AppKey : AppKey that you got from your Kony MobileFabric console after app configuration  
+	* AppSecret : AppKey that you got from your Kony MobileFabric console after app configuration  
+	* ServiceURL : Service URL that you got from your Kony MobileFabric console after app configuration 
+	* DefaultUsername :  Salesforce Developer Account User Name
+	* DefaultPassword : Salesforce Developer Account Password. Please note that you must concatenate your password with security token that you got from salesforce.
+	* IdentityService: Your KonyMobileFabric Identity Service Name
+	* AccountIntegrationService : Your KonyMobileFabric Account Related Integration Service Name
+	* LeadIntegrationService : Your KonyMobileFabric Lead Related Integration Service Name
+	* ContactIntegrationService : Your KonyMobileFabric Contact Related Integration Service Name
+	* OpportunitiesIntegrationService : Your KonyMobileFabric Opportunity Related Integration Service Name
+	* KMSID : Any Unique identifier for the application. For example email id.
+	
+	Please look at config.js file below for more information.
+	
 5. Build and run the app
  
 config.js:
@@ -25,7 +40,7 @@ MBaaSConfig ={
 	"ContactIntegrationService":"<Enter Your KonyMobileFabric Contact Related Integration Service Name>",
     "OpportunitiesIntegrationService":"<Enter Your KonyMobileFabric Opportunity Related Integration Service Name>",
     "ServiceURL" : "<Enter Your KonyMobileFabric Service-URL>",
-    "KMSID":"<Enter Your KMS ID>",    
+    "KMSID":"<Please provide any Unique identifier for the application. For example your email id.>",    
     "getContactQuery":{ "queryString":"SELECT ID,NAME,FIRSTNAME,LASTNAME,TITLE,PHONE,EMAIL FROM Contact"},
     "getAccountQuery":{ "queryString":"SELECT name,type,BillingCity,BillingState,AnnualRevenue,website,Industry,phone,BillingStreet from Account where type!=null"},
     "getLeadQuery":   { "queryString":"SELECT ID,NAME,FIRSTNAME,LASTNAME,TITLE,PHONE,EMAIL FROM Lead"},
@@ -34,7 +49,7 @@ MBaaSConfig ={
 	
 
 **Note:**
-You need to setup and configure your Kony MobileFabric environment before running the app. Follow these tutorials at  http://docs.kony.com/tutorials/MobileFabric/ to know how to set up Kony MobileFabric environment
+You need to setup and configure your Kony MobileFabric environment on your cloud before running the app. Follow these tutorials at  http://docs.kony.com/tutorials/MobileFabric/ to know how to set up Kony MobileFabric environment
 
 # Supported platforms:
 **Mobile**
