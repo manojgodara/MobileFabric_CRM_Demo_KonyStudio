@@ -22,12 +22,9 @@ This application will showcase how to use JS MBaaS SDK to invoke identity, integ
 	* OpportunitiesIntegrationService : Your KonyMobileFabric Opportunity Related Integration Service Name
 	* KMSID : Any Unique identifier for the application. For example email id.
 	
-	Please look at config.js file below for more information.
-	
 5. Build and run the app
  
 config.js:
-
 MBaaSConfig ={
 	
 	"DefaultUsername" : "<Enter Your Salesforce Developer Account User Name>", 
