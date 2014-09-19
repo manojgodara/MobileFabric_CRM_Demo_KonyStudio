@@ -23,6 +23,7 @@ This application will showcase how to use JS MBaaS SDK to invoke identity, integ
 * Build and run the app
  
 config.js:
+
 MBaaSConfig ={	
 
 	"DefaultUsername" : "<Enter Your Salesforce Developer Account User Name>", 
