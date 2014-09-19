@@ -9,7 +9,6 @@ This application will showcase how to use JS MBaaS SDK to invoke identity, integ
 2. Import project to your Kony IDE.
 3. In the project, Go to js folder under modules and open 'config.js' file
 4. Write down below required details in the space provided against each parameter in config.js file.
-
 	* AppKey : AppKey that you got from your Kony MobileFabric console after app configuration  
 	* AppSecret : AppKey that you got from your Kony MobileFabric console after app configuration  
 	* ServiceURL : Service URL that you got from your Kony MobileFabric console after app configuration 
@@ -20,9 +19,8 @@ This application will showcase how to use JS MBaaS SDK to invoke identity, integ
 	* LeadIntegrationService : Your KonyMobileFabric Lead Related Integration Service Name
 	* ContactIntegrationService : Your KonyMobileFabric Contact Related Integration Service Name
 	* OpportunitiesIntegrationService : Your KonyMobileFabric Opportunity Related Integration Service Name
-	* KMSID : Any Unique identifier for the application. For example email id.
-	
-5. Build and run the app
+	* KMSID : Any Unique identifier for the application. For example email id.	
+* Build and run the app
  
 config.js:
 MBaaSConfig ={
