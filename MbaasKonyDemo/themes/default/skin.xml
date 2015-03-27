@@ -6774,7 +6774,7 @@
         <att name="Tablet_right_background_image" value="" type="String"/>
         <att name="Desktop_right_background_image" value="" type="String"/>
         <att name="Bg_iphone_image" value="" type="String"/>
-        <att name="Bg_android_image" value="" type="String"/>
+        <att name="Bg_android_image" value="crm.9.png" type="String"/>
         <att name="Bg_palm_image" value="" type="String"/>
         <att name="Bg_normal_image" value="" type="String"/>
         <att name="Bg_medium_image" value="" type="String"/>

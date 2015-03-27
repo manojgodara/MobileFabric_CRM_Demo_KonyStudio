@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <application id="MbaasKonyDemo" name="MbaasKonyDemo">
-    <container displayname="Form" id="frmAccountDetails" type="form"/>
-    <container displayname="Form" id="frmAccounts" type="form"/>
-    <container displayname="Form" id="frmContactDetails" type="form"/>
-    <container displayname="Form" id="frmContacts" type="form"/>
-    <container displayname="Form" id="frmDashBoard" type="form"/>
-    <container displayname="Form" id="frmEditContactDetails" type="form">
+    <container isflex="false" displayname="Form" id="frmAccountDetails" type="form"/>
+    <container isflex="false" displayname="Form" id="frmAccounts" type="form"/>
+    <container isflex="false" displayname="Form" id="frmContactDetails" type="form"/>
+    <container isflex="false" displayname="Form" id="frmContacts" type="form"/>
+    <container isflex="false" displayname="Form" id="frmDashBoard" type="form"/>
+    <container isflex="false" displayname="Form" id="frmEditContactDetails" type="form">
         <component displayname="TextBox2" id="txtBoxContactDetailsFirstName" type="textbox2"/>
         <component displayname="TextBox2" id="txtBoxContactDetLName" type="textbox2"/>
         <component displayname="TextBox2" id="txtBoxContactDetPhone" type="textbox2"/>
         <component displayname="TextBox2" id="txtBoxContactDetEmail" type="textbox2"/>
     </container>
-    <container displayname="Form" id="frmLeadDetails" type="form"/>
-    <container displayname="Form" id="frmLeads" type="form"/>
-    <container displayname="Form" id="frmLogin" type="form">
+    <container isflex="false" displayname="Form" id="frmLeadDetails" type="form"/>
+    <container isflex="false" displayname="Form" id="frmLeads" type="form"/>
+    <container isflex="false" displayname="Form" id="frmLogin" type="form">
         <component displayname="TextBox2" id="textUserName" type="textbox2"/>
         <component displayname="TextBox2" id="textPassword" type="textbox2"/>
     </container>
-    <container displayname="Form" id="frmOpportunities" type="form"/>
-    <container displayname="Form" id="frmOpportunityDetails" type="form"/>
+    <container isflex="false" displayname="Form" id="frmOpportunities" type="form"/>
+    <container isflex="false" displayname="Form" id="frmOpportunityDetails" type="form"/>
     <globalsequences/>
     <skins/>
 </application>
