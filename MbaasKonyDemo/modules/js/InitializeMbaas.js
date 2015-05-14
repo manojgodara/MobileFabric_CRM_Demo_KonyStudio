@@ -9,7 +9,7 @@ var syncObj;
 function initSuccessCallBack(res)//res is of type JSON and which will have MBaaS application configuration. 
 {
 	//kony.application.dismissLoadingScreen();
-	kmsNotificationAlert();//for push message alert.
+	//kmsNotificationAlert();//for push message alert.
 }
 /**
 ****************************************************************
